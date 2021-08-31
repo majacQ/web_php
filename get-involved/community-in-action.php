@@ -1,114 +1,26 @@
 <?php
-// $Id$
-$_SERVER['BASE_PAGE'] = 'get-involved.php';
+$_SERVER['BASE_PAGE'] = 'get-involved/contribute.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/include/prepend.inc';
 
-$SIDEBAR_DATA ='
-    <p>
-      Ever wondered how the PHP.net project actually works and what it has to offer? 
-      Who is in charge and how decisions are made? The PHP.net project has a lot of 
-      things in the works and is always looking for new talent to join the project, 
-      share new ideas, discuss improvements, fix broken features, look after the
-      websites, documentation, and so on and on...
-    </p>
+$SIDEBAR_DATA = '
+<h3>Contents</h3>
+
+<ul>
+ <li><a href="#community-in-action">Community in action</a></li>
+ <li><a href="#how-to-get-involved">So, how to get involved?</a></li>
+ <li><a href="#tips">Tips</a></li>
+ <li><a href="#what-kind-of-projects">What kind of projects does PHP.net have?</a></li>
+ <li><a href="#the-documentation-project">The documentation project</a></li>
+ <li><a href="#the-websites">The websites</a></li>
+ <li><a href="#conclusion">Conclusion</a></li>
+</ul>
 ';
 
-  <<<<<<< get-involved
-<aside class="tips">
-<p>
- Ever wondered how the PHP.net project actually works and what it has to offer?
- Who is in charge and how decisions are made? The PHP.net project has a lot of
- things in the works and is always looking for new talent to join the project,
- share new ideas, discuss improvements, fix broken features, look after the
- websites, documentation, and so on and on...
-</p>
-</aside>
-
-<h1>Get Involved</h1>
-
-  =======
-site_header("Get Involved", array("current" => "community"));
-
+site_header("Community in Action", array("current" => "community"));
 ?>
-<h2>Improving PHP</h2>
-<p>
-    This particular article assumes you are running <i>Ubuntu Linux</i>.
-</p>
-<p>
-    To get a working build environment you need to run the following command;
-    <ul>
-        <li>sudo apt-get build-dep php5</li>
-    </ul>
-For any extension that requires 3rd party libraries you need to install those libraries.
-The simplest way to accomplish that is to to use <em>apt-get</em> to install the Ubuntu build dependencies for that particular extension. For example, if you want to build PHP with <a href="/manual/intl">intl</a> support you have to run;
-    <ul>
-        <li>sudo apt-get build-dep php5<em>-intl</em></li>
-    </ul>
-to install the ext/intl dependencies.
-</p>
-<p>
-To actually build PHP with ext/intl support you need to configure PHP to enable it, f.e.
-    <ul>
-        <li>./configure --enable-intl</li>
-    </ul>
-    The rule of thumb for configuring PHP is;<br />
-    <ul>
-        <li>If its a pure PHP functionality use <em>--enable</em>extension-name<br />
-            Example;
-            <ul>
-                <li>./configure --enable-soap</li>
-            </ul>
-        </li>
-        <li>And for extensions wrapping external libraries use <em>--with</em>-extension-name<br />
-            Example;
-            <ul>
-                <li>./configure --with-pgsql</li>
-            </ul>
-        </li>
-    </ul>
-    But as you saw with ext/intl, rules are meant to be broken - so you <em>should</em> check <i>./configure --help</i> first.<br />
-    When PHP encounters unknown configure argument you will be notified in the end, so you can modify your arguments and re-run ./configure before executing <em>make</em>.
-</p>
-<p>
-PHP creates a script called <em>config.nice</em> after every successful <em>./configure --some --arguments</em> so you don't have to remember all the options you passed to ./configure every time you want to rebuild PHP, running <em>./config.nice</em> will do that for you
-</p>
-    
-  >>>>>>> responsive
-<p>
- There are many ways to be involved with PHP. Help is always needed and
- appreciated, and you can help in many ways: from running our test suite and
- sending in the results, through to sending a pull request for a new feature,
- editing the PHP manual to better describe a feature, or through a myriad of
- other methods.
-</p>
 
-<p>
- Hannes Magnusson wrote an article in the August 2010 issue of
- <a href="http://www.phparch.com/">php|architect</a> entitled
- <a href="/get-involved/community-in-action.php">Community in Action</a>, which
- describes the PHP community in detail and covers many ways you can contribute
- to PHP. He has kindly made it available on the PHP.net site, and it's well
- worth a read.
-</p>
+<h1 id="community-in-action">Community in Action</h1>
 
-<p>
- More detailed information on a couple of ways you can get involved can be
- found below.
-</p>
-
-<hr />
-
-  <<<<<<< get-involved
-<h2>Run the Test Suite</h2>
-
-<p>
- <a href="/get-involved/run-the-tests.php">Running the test suite</a> helps the
- PHP QA team to look for patterns of test failures and use those to track down
- and fix bugs in PHP. Having a variety of people running the test suite on
- different operating systems and architectures for alpha, beta, RC and stable
- releases is a huge help in preventing and finding bugs and regressions.
-  =======
-<h2>Contributing</h2>
 <p>
     The PHP project is so much more than just the scripting language on which it is
     focused.  It is a vibrant community of developers scratching related itches,
@@ -251,7 +163,7 @@ PHP creates a script called <em>config.nice</em> after every successful <em>./co
 
 
 
-<h3>So, how to get involved?</h3>
+<h2 id="how-to-get-involved">So, how to get involved?</h2>
 <p>
     There are a lot of ways you can contribute to the project, it simply depends on what you fancy.
 </p>
@@ -278,6 +190,7 @@ PHP creates a script called <em>config.nice</em> after every successful <em>./co
     </li>
 </ul>
 
+
 <p>
     Getting involved is a lot easier than most people think - and chances are that
     you are already involved in one way or another. You don't need an Git account
@@ -299,10 +212,10 @@ PHP creates a script called <em>config.nice</em> after every successful <em>./co
 
 
 
-<h3>Tips</h3>
+<h2 id="tips">Tips</h2>
 <ul>
     <li>
-        <h4>Mailing Lists</h4>
+        <h3>Mailing Lists</h3>
         <p>
             To register with any PHP mailing list, just send a blank email to
             &lt;listname&gt;-subscribe@lists.php.net. For example if you want to register
@@ -316,7 +229,7 @@ PHP creates a script called <em>config.nice</em> after every successful <em>./co
         </p>
     </li>
     <li>
-    <h4>The Bug Tracker</h4>
+    <h3>The Bug Tracker</h3>
         <p>
             Filing a bug report is an art. It isn't very complicated, but you do
             have to think about what you are reporting. Quickly looking through
@@ -338,7 +251,7 @@ PHP creates a script called <em>config.nice</em> after every successful <em>./co
         </p>
     </li>
     <li>
-        <h4>Getting Started With Contributing</h4>
+        <h3>Getting Started With Contributing</h3>
         <p>
             Unsure which task to tackle first? Stuck on a problem? Need a
             quick brainstorming session? IRC is a very convenient way to get
@@ -355,7 +268,7 @@ PHP creates a script called <em>config.nice</em> after every successful <em>./co
         </p>
     </li>
     <li>
-        <h4>Less Is More</h4>
+        <h3>Less Is More</h3>
         <p>
             When you are ready to contribute to the project please don't try
             to tackle the biggest issues and expect to fix them right away.
@@ -374,7 +287,7 @@ PHP creates a script called <em>config.nice</em> after every successful <em>./co
 
 
 
-<h3>So what kind of projects does PHP.net have?</h3>
+<h2 id="what-kind-of-projects">So what kind of projects does PHP.net have?</h2>
 <ul>
     <li>PHP (the language)</li>
     <li>PECL (various additional PHP functionality in the form of extensions)</li>
@@ -394,7 +307,7 @@ PHP creates a script called <em>config.nice</em> after every successful <em>./co
 
 
 
-<h3>The Documentation Project</h3>
+<h2 id="the-documentation-project">The Documentation Project</h2>
 <p>
     The main focus of the documentation project (phpdoc) is to document the PHP
     language (and PECL extensions) with usage examples, FAQs, and tracking changes
@@ -458,7 +371,7 @@ PHP creates a script called <em>config.nice</em> after every successful <em>./co
 </p>
 
 
-<h3>The Websites</h3>
+<h2 id="the-websites">The Websites</h2>
 <p>
     No surprise there, the webmaster team maintains several websites, and is
     responsible for maintaining the mirroring infrastructure and related tasks.
@@ -493,7 +406,7 @@ PHP creates a script called <em>config.nice</em> after every successful <em>./co
 
 
 
-<h3>Conclusion</h3>
+<h2 id="conclusion">Conclusion</h2>
 <p>
     PHP.net has a lot of areas to which you can contribute: everything from 
     hardcore development to managing user-contributed notes in the manual; 
@@ -506,11 +419,7 @@ PHP creates a script called <em>config.nice</em> after every successful <em>./co
     a difference. I hope this article has inspired you to get involved with the 
     project, or has at least given you some idea on how things work and what you 
     can do if you ever do decide you want to get involved!
-  >>>>>>> responsive
 </p>
 
 <?php
-site_footer(array('sidebar'=>$SIDEBAR_DATA));
-
- vim: set et ts=4 sw=4 ft=php: : */
-
+site_footer();
