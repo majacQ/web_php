@@ -79,9 +79,9 @@ if (is_array($CONF_TEASER) && $CONF_TEASER) {
 require_once './Gateway/NewsFileSystemGateway.php';
 
 $NewsGateway = new NewsFileSystemGateway();
-$RecentNews = $NewsGateway->getArticlesForCategories(new ArrayIterator(array(
+$RecentNews = $NewsGateway->getArticlesForCategories(array(
     "frontpage"
-)), 2);
+), 4);
 
 ob_start();
 
@@ -98,6 +98,43 @@ $content = "
     $news
 </div>
 ";
+
+$intro = <<<EOF
+  <div class="row-fluid">
+    <div class="span9 blurb">
+      <p>PHP is a popular general-purpose scripting language that is especially suited to web development.</p>
+      <p>Fast, flexible and pragmatic, PHP powers everything from your blog to the largest social networking site in the world.</p>
+    </div>
+    <div class="background span3"></div>
+    <div class="span3">
+      <div class="download-php">
+        <h2>Download PHP</h2>
+
+EOF;
+if(!empty($RELEASES[5])) {
+    $releases = array_chunk($RELEASES[5], 2, $preserve_keys = TRUE);
+    foreach ($releases as $row) {
+        $intro .= "
+        <div class='row-fluid'>
+";
+        foreach ($row as $version => $release) {
+            $intro .= "
+          <div class='span6'>
+            <p><a class='download-link' href='/downloads.php#v$version'>$version</a></p>
+            <p class='notes'><a href='/ChangeLog-5.php#$version'>Release Notes</a></p>
+          </div>
+";
+        }
+        $intro .="
+        </div>
+";
+    }
+}
+$intro .= <<<EOF
+      </div>
+    </div>
+  </div>
+EOF;
 
 // Write out common header
 site_header("Hypertext Preprocessor",
@@ -125,54 +162,27 @@ site_header("Hypertext Preprocessor",
                 "title" => "PHP Release feed"
             ),
 
-        )
+        ),
+        'css' => array('home.css'),
+        'intro' => $intro
     )
 );
 
 // Print body of home page.
+print $content;
+
+ob_start();
 print_view('homepage/sidebar.php', array(
     'announcements' => $announcements
 ));
-print $content;
-
-$thanksTo = <<<THANKS
-<section id='thanks-to'>
-    <h3>Thanks To</h3>
-    <ul>
-        <li><a target="_blank" href="http://www.easydns.com/?V=698570efeb62a6e2" title="DNS Hosting provided by easyDNS">easyDNS</a></li>
-        <li><a target="_blank" href="http://www.directi.com/" title="Directi">Directi</a></li>
-        <li><a target="_blank" href="http://promote.pair.com/direct.pl?php.net" title="pair Networks">pair Networks</a></li>
-        <li><a target="_blank" href="http://www.servercentral.net/" title="Server Central">Server Central</a></li>
-        <li><a target="_blank" href="http://www.hostedsolutions.com/" title="Hosted Solutions">Hosted Solutions</a></li>
-        <li><a target="_blank" href="http://www.spry.com/" title="Spry VPS Hosting">Spry VPS Hosting</a></li>
-        <li class="thanks-two">
-            <a target="_blank" href="http://ez.no/" title="eZ Systems">
-                <span>eZ Systems</span>
-            </a>
-            <a target="_blank" href="http://www.hit.no/">
-                <span>HiT</span>
-            </a>
-        </li>
-        <li><a target="_blank" href="http://www.osuosl.org" title="OSU Open Source Lab">OSU Open Source Lab</a></li>
-        <li><a target="_blank" href="http://www.yahoo.com/" title="Yahoo! Inc.">Yahoo! Inc.</a></li>
-        <li><a target="_blank" href="http://www.binarysec.com/" title="BinarySEC">BinarySEC</a></li>
-        <li><a target="_blank" href="http://www.nexcess.net/" title="NEXCESS.NET">NEXCESS.NET</a></li>
-        <li><a target="_blank" href="http://www.rackspace.com/" title="Rackspace">Rackspace</a></li>
-        <li><a target="_blank" href="http://www.eukhost.com/" title="EUKhost">EUKhost</a></li>
-        <li><a target="_blank" href="http://www.sohosted.nl/webhosting/" title="Sohosted">Sohosted</a></li>
-        <li><a target="_blank" href="http://www.redpill-linpro.com" title="Redpill Linpro">Redpill Linpro</a></li>
-        <li><a target="_blank" href="http://www.facebook.com" title="Facebook">Facebook</a></li>
-        <li><a target="_blank" href="http://krystal.co.uk" title="Krystal.co.uk">Krystal.co.uk</a></li>
-        <li><a target="_blank" href="http://servergrove.com/" title="ServerGrove">ServerGrove</a></li>
-    </ul>
-</section>
-THANKS;
+$sidebar = ob_get_clean();
 
 // Print the common footer.
 site_footer(
     array(
         "atom" => "/feed.atom", // Add a link to the feed at the bottom
         'elephpants' => true,
-        'spanning-content' => $thanksTo
+        'spanning-content' => $thanksTo,
+        'sidebar' => $sidebar
     )
 );

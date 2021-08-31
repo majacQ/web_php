@@ -224,6 +224,13 @@ function site_header($title = '', $config = array())
 </head>
 <body{$onload}>
 
+<div id="head-beta-warning">
+  <a id="beta-warning" href="?setbeta=1&beta=1">
+    <span class="dismiss">dismiss</span>
+    <span class="blurb">Step into the future! Click here to switch to the beta php.net site</span>
+  </a>
+</div>
+
 <div id="headnav">
  <a href="/" rel="home"><img src="{$_SERVER['STATIC_ROOT']}/images/php.gif"
  alt="PHP" width="120" height="67" id="phplogo" /></a>
@@ -248,7 +255,7 @@ function site_header($title = '', $config = array())
    <span title="Keyboard shortcut: Alt+S (Win), Ctrl+S (Apple)">
     <span class="shortkey">s</span>earch for
    </span>
-   <input type="text" name="pattern" value="" size="30" accesskey="s" />
+   <input type="text" name="pattern" value="" size="30" accesskey="s" title="Search"/>
    <span>in the</span>
    <select name="show">
     <option value="all"      >all php.net sites</option>
@@ -353,15 +360,50 @@ function site_footer($config = array())
   Last updated: {$last_updated}
  </div>
 </div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    function showBetaWarning() {
+        return document.cookie.indexOf("BetaWarning=") == -1;
+    }
+
+    // ----- BETA WARNING CODE -----
+    var headBetaWarning = $('#head-beta-warning');
+
+    // Wire up the beta warning.
+    headBetaWarning.find('.dismiss').click(function(e) {
+        e.preventDefault();
+        $('body').css('margin-top', 0);
+        headBetaWarning.slideUp("fast");
+
+        // Hide it for a month by default.
+        var expiry = new Date();
+        expiry.setTime(expiry.getTime() + (30 * 24 * 60 * 60 * 1000));
+
+        document.cookie = "BetaWarning=off; expires=" + expiry.toGMTString() + "; path=/";
+    });
+
+    if (showBetaWarning()) {
+        headBetaWarning.show();
+        $('body').css('margin-top', '25px');
+        $('#beta-warning').slideDown(300, function() {
+           $(this).find('.blurb').fadeIn('slow');
+        });
+    }
+
+});
+</script>
+
 <!--[if IE 6]>
 <script type="text/javascript">
-    /*Load jQuery if not already loaded*/ if(typeof jQuery == 'undefined'){ document.write("<script type=\"text/javascript\"   src=\"//ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js\"></"+"script>"); var __noconflict = true; }
     var IE6UPDATE_OPTIONS = {
         icons_path: "/ie6update/images/"
     }
 </script>
 <script type="text/javascript" src="/ie6update/ie6update.js"></script>
 <![endif]-->
+
 </body>
 </html>
 END_FOOTER;
@@ -416,7 +458,6 @@ function make_image($file, $alt = FALSE, $align = FALSE, $extras = FALSE,
         $align,
         ($extras ? ' ' . $extras              : '')
     );
-    return $image;
 }
 
 // Print an <img /> tag out for a given file
@@ -689,9 +730,7 @@ function print_view($templateName, array $params = array()) {
     $path = $_SERVER['DOCUMENT_ROOT'] . '/views/' . $templateName;
     if(file_exists($path)) {
         if(!empty($params)) {
-        foreach($params as $key => $param) {
-            $$key = $param;
-            }
+            extract($params);
         }
         include_once $path;
     }
@@ -817,9 +856,10 @@ function site_header_beta($title = '', $config = array())
         "current" => "",
         "meta-navigation" => array(),
         'classes' => '',
+        'layout_span' => 9,
     );
 
-    $config += $defaults;
+    $config = array_merge($defaults, $config);
 
     $lang = language_convert($config["lang"]);
     $curr = $config["current"];

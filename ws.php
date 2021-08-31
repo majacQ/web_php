@@ -1,9 +1,7 @@
 <?php
 include 'include/languages.inc';
-if(!$conf=apc_fetch('ws2_config')) {
-  include '/local/Web/ws2.conf';
-  apc_store('ws2_config',$conf);
-}
+include '/local/this-box/ws2.conf';
+
 $raw = filter_input(INPUT_GET, 'q', FILTER_UNSAFE_RAW);
 $q = urlencode($raw);
 $r = isset($_REQUEST['results']) ? (int)$_REQUEST['results'] : 10;
@@ -97,7 +95,7 @@ function ws_bing_massage($data) {
         ),
     );
 
-    foreach ($set as $result) {
+    foreach ((array)$set as $result) {
         $massaged['ResultSet']['Result'][] = array(
             'Title' => $result['Title'],
             'Summary' => $result['Description'],

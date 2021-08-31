@@ -14,7 +14,7 @@
 $LANGUAGES = array(
     'en'    => 'English',
     'ar'    => 'Arabic',
-	'bg'    => 'Bulgarian',
+    'bg'    => 'Bulgarian',
     'pt_BR' => 'Brazilian Portuguese',
     'zh'    => 'Chinese (Simplified)',
     'hk'    => 'Chinese (Hong Kong Cantonese)',
@@ -74,7 +74,9 @@ $INACTIVE_ONLINE_LANGUAGES = array(
     'kr'    => 'Korean',
     'lt'    => 'Lithuanian',
     'no'    => 'Norwegian',
+    'pl'    => 'Polish',
     'pt'    => 'Portuguese',
+    'fa'    => 'Persian',
     'sr'    => 'Serbian',
     'sk'    => 'Slovak',
     'sl'    => 'Slovenian',
@@ -118,7 +120,7 @@ $LANGUAGES_MAP = array(
 	'sv' => 'sv-se',
 	'tr' => 'tr-tr',
 	'he' => 'he-il',
-	'id' => 'en-ca', // ? id Indonesian, in-id not available (yet)
+	'id' => 'en-id', // ? id Indonesian, in-id not available (yet)
 );
 
 $ACTIVE_ONLINE_LANGUAGES = array_diff($LANGUAGES, $INACTIVE_ONLINE_LANGUAGES);

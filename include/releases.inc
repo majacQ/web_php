@@ -2,6 +2,223 @@
 $OLDRELEASES = array (
   5 => 
   array (
+    '5.4.16' => 
+    array (
+      'announcement' => 
+      array (
+        'English' => '/releases/5_4_16.php',
+      ),
+      'source' => 
+      array (
+        0 => 
+        array (
+          'filename' => 'php-5.4.16.tar.bz2',
+          'name' => 'PHP 5.4.16 (tar.bz2)',
+          'md5' => '3d2c694d28861d707b2622c3cc941cff',
+          'date' => '06 Jun 2013',
+        ),
+        1 => 
+        array (
+          'filename' => 'php-5.4.16.tar.gz',
+          'name' => 'PHP 5.4.16 (tar.gz)',
+          'md5' => '3940a5295872964495f9c56596272d68',
+          'date' => '06 Jun 2013',
+        ),
+        2 => 
+        array (
+          'link' => 'http://windows.php.net/download/#php-5.4',
+          'name' => 'Windows 5.4.16 binaries and source',
+        ),
+      ),
+      'date' => '09 May 2013',
+      'museum' => false,
+    ),
+    '5.4.15' => 
+    array (
+      'announcement' => 
+      array (
+        'English' => '/releases/5_4_15.php',
+      ),
+      'source' => 
+      array (
+        0 => 
+        array (
+          'filename' => 'php-5.4.15.tar.bz2',
+          'name' => 'PHP 5.4.15 (tar.bz2)',
+          'md5' => '145ea5e845e910443ff1eddb3dbcf56a',
+          'date' => '09 May 2013',
+        ),
+        1 => 
+        array (
+          'filename' => 'php-5.4.15.tar.gz',
+          'name' => 'PHP 5.4.15 (tar.gz)',
+          'md5' => '2651b983c18df9d455ec4c69aef45834',
+          'date' => '09 May 2013',
+        ),
+        2 => 
+        array (
+          'link' => 'http://windows.php.net/download/#php-5.4',
+          'name' => 'Windows 5.4.15 binaries and source',
+        ),
+      ),
+      'date' => '09 May 2013',
+      'museum' => false,
+    ),
+    '5.4.14' => 
+    array (
+      'announcement' => 
+      array (
+        'English' => '/releases/5_4_14.php',
+      ),
+      'source' => 
+      array (
+        0 => 
+        array (
+          'filename' => 'php-5.4.14.tar.bz2',
+          'name' => 'PHP 5.4.14 (tar.bz2)',
+          'md5' => 'cfdc044be2c582991a1fe0967898fa38',
+          'date' => '11 Apr 2013',
+        ),
+        1 => 
+        array (
+          'filename' => 'php-5.4.14.tar.gz',
+          'name' => 'PHP 5.4.14 (tar.gz)',
+          'md5' => '08df8196af12bc850409a7bff13bf8f0',
+          'date' => '11 Apr 2013',
+        ),
+        2 => 
+        array (
+          'link' => 'http://windows.php.net/download/#php-5.4',
+          'name' => 'Windows 5.4.14 binaries and source',
+        ),
+      ),
+      'date' => '11 Apr 2013',
+      'museum' => false,
+    ),
+    '5.4.13' => 
+    array (
+      'announcement' => 
+      array (
+        'English' => '/releases/5_4_13.php',
+      ),
+      'source' => 
+      array (
+        0 => 
+        array (
+          'filename' => 'php-5.4.13.tar.bz2',
+          'name' => 'PHP 5.4.13 (tar.bz2)',
+          'md5' => 'cacd308e978b7cf9ba4993196612ccf7',
+          'date' => '14 Mar 2013',
+        ),
+        1 => 
+        array (
+          'filename' => 'php-5.4.13.tar.gz',
+          'name' => 'PHP 5.4.13 (tar.gz)',
+          'md5' => '445025340677d5bfe22eb670d6db6795',
+          'date' => '14 Mar 2013',
+        ),
+        2 => 
+        array (
+          'link' => 'http://windows.php.net/download/#php-5.4',
+          'name' => 'Windows 5.4.13 binaries and source',
+        ),
+      ),
+      'date' => '14 Mar 2013',
+      'museum' => false,
+    ),
+    '5.4.12' => 
+    array (
+      'announcement' => 
+      array (
+        'English' => '/releases/5_4_12.php',
+      ),
+      'source' => 
+      array (
+        0 => 
+        array (
+          'filename' => 'php-5.4.12.tar.bz2',
+          'name' => 'PHP 5.4.12 (tar.bz2)',
+          'md5' => '5c7b614242ae12e9cacca21c8ab84818',
+          'date' => '21 Feb 2013',
+        ),
+        1 => 
+        array (
+          'filename' => 'php-5.4.12.tar.gz',
+          'name' => 'PHP 5.4.12 (tar.gz)',
+          'md5' => '81b20cac4f977b8764ae904302048d84',
+          'date' => '21 Feb 2013',
+        ),
+        2 => 
+        array (
+          'link' => 'http://windows.php.net/download/#php-5.4',
+          'name' => 'Windows 5.4.12 binaries and source',
+        ),
+      ),
+      'date' => '21 Feb 2013',
+      'museum' => false,
+    ),
+    '5.4.11' => 
+    array (
+      'announcement' => 
+      array (
+        'English' => '/releases/5_4_11.php',
+      ),
+      'source' => 
+      array (
+        0 => 
+        array (
+          'filename' => 'php-5.4.11.tar.bz2',
+          'name' => 'PHP 5.4.11 (tar.bz2)',
+          'md5' => '9975e68c22b86b013b934743ad2d2276',
+          'date' => '17 Jan 2013',
+        ),
+        1 => 
+        array (
+          'filename' => 'php-5.4.11.tar.gz',
+          'name' => 'PHP 5.4.11 (tar.gz)',
+          'md5' => '32fa16b3abd5527316c3c076b3395914',
+          'date' => '17 Jan 2013',
+        ),
+        2 => 
+        array (
+          'link' => 'http://windows.php.net/download/#php-5.4',
+          'name' => 'Windows 5.4.11 binaries and source',
+        ),
+      ),
+      'date' => '17 Jan 2013',
+      'museum' => false,
+    ),
+    '5.4.10' => 
+    array (
+      'announcement' => 
+      array (
+        'English' => '/releases/5_4_10.php',
+      ),
+      'source' => 
+      array (
+        0 => 
+        array (
+          'filename' => 'php-5.4.10.tar.bz2',
+          'name' => 'PHP 5.4.10 (tar.bz2)',
+          'md5' => 'cb716b657a30570b9b468b9e7bc551a1',
+          'date' => '20 Dec 2012',
+        ),
+        1 => 
+        array (
+          'filename' => 'php-5.4.10.tar.gz',
+          'name' => 'PHP 5.4.10 (tar.gz)',
+          'md5' => '1e7fbe418658d5433bd315030584c45c',
+          'date' => '20 Dec 2012',
+        ),
+        2 => 
+        array (
+          'link' => 'http://windows.php.net/download/#php-5.4',
+          'name' => 'Windows 5.4.10 binaries and source',
+        ),
+      ),
+      'date' => '20 Dec 2012',
+      'museum' => false,
+    ),
     '5.4.9' => 
     array (
       'announcement' => 
@@ -266,6 +483,218 @@ $OLDRELEASES = array (
       'date' => '26 April 2012',
       'museum' => false,
     ),
+    '5.4.0' => 
+    array (
+      'announcement' => 
+      array (
+        'English' => '/releases/5_4_0.php',
+      ),
+      'source' => 
+      array (
+        0 => 
+        array (
+          'filename' => 'php-5.4.0.tar.bz2',
+          'name' => 'PHP 5.4.0 (tar.bz2)',
+          'md5' => '04bb6f9d71ea86ba05685439d50db074',
+          'date' => '01 March 2012',
+        ),
+        1 => 
+        array (
+          'filename' => 'php-5.4.0.tar.gz',
+          'name' => 'PHP 5.4.0 (tar.gz)',
+          'md5' => '46b72e274c6ea7e775245ffdb81c9ce5',
+          'date' => '01 March 2012',
+        ),
+      ),
+      'date' => '01 March 2012',
+      'museum' => false,
+    ),
+    '5.3.25' => 
+    array (
+      'announcement' => 
+      array (
+        'English' => '/releases/5_3_25.php',
+      ),
+      'source' => 
+      array (
+        0 => 
+        array (
+          'filename' => 'php-5.3.25.tar.bz2',
+          'name' => 'PHP 5.3.25 (tar.bz2)',
+          'md5' => 'd71db8d92edbb48beb5b645b55471139',
+          'date' => '09 May 2013',
+        ),
+        1 => 
+        array (
+          'filename' => 'php-5.3.25.tar.gz',
+          'name' => 'PHP 5.3.25 (tar.gz)',
+          'md5' => 'a430a48b8939fe1f8915ee38681b0afa',
+          'date' => '09 May 2013',
+        ),
+        2 => 
+        array (
+          'link' => 'http://windows.php.net/download/#php-5.3',
+          'name' => 'Windows 5.3.25 binaries and source',
+        ),
+      ),
+      'date' => '09 May 2013',
+      'museum' => false,
+    ),
+    '5.3.24' => 
+    array (
+      'announcement' => 
+      array (
+        'English' => '/releases/5_3_24.php',
+      ),
+      'source' => 
+      array (
+        0 => 
+        array (
+          'filename' => 'php-5.3.24.tar.bz2',
+          'name' => 'PHP 5.3.24 (tar.bz2)',
+          'md5' => '9820604df98c648297dcd31ffb8214e8',
+          'date' => '11 Apr 2013',
+        ),
+        1 => 
+        array (
+          'filename' => 'php-5.3.24.tar.gz',
+          'name' => 'PHP 5.3.24 (tar.gz)',
+          'md5' => 'cb0311a6a5ed6ffff8f41f713f9d8e84',
+          'date' => '11 Apr 2013',
+        ),
+        2 => 
+        array (
+          'link' => 'http://windows.php.net/download/#php-5.3',
+          'name' => 'Windows 5.3.24 binaries and source',
+        ),
+      ),
+      'date' => '11 Apr 2013',
+      'museum' => false,
+    ),
+    '5.3.23' => 
+    array (
+      'announcement' => 
+      array (
+        'English' => '/releases/5_3_23.php',
+      ),
+      'source' => 
+      array (
+        0 => 
+        array (
+          'filename' => 'php-5.3.23.tar.bz2',
+          'name' => 'PHP 5.3.23 (tar.bz2)',
+          'md5' => 'ab7bd1dd3bbc8364cb9fcaa2d79fb502',
+          'date' => '14 Mar 2013',
+        ),
+        1 => 
+        array (
+          'filename' => 'php-5.3.23.tar.gz',
+          'name' => 'PHP 5.3.23 (tar.gz)',
+          'md5' => '9cd92b0de2b51dcd372f46fa623984f4',
+          'date' => '14 Mar 2013',
+        ),
+        2 => 
+        array (
+          'link' => 'http://windows.php.net/download/#php-5.3',
+          'name' => 'Windows 5.3.23 binaries and source',
+        ),
+      ),
+      'date' => '14 Mar 2013',
+      'museum' => false,
+    ),
+    '5.3.22' => 
+    array (
+      'announcement' => 
+      array (
+        'English' => '/releases/5_3_22.php',
+      ),
+      'source' => 
+      array (
+        0 => 
+        array (
+          'filename' => 'php-5.3.22.tar.bz2',
+          'name' => 'PHP 5.3.22 (tar.bz2)',
+          'md5' => 'bf351426fc7f97aa13914062958a6100',
+          'date' => '21 Feb 2013',
+        ),
+        1 => 
+        array (
+          'filename' => 'php-5.3.22.tar.gz',
+          'name' => 'PHP 5.3.22 (tar.gz)',
+          'md5' => '5008d8e70195d933e30bfbae3651b4ed',
+          'date' => '21 Feb 2013',
+        ),
+        2 => 
+        array (
+          'link' => 'http://windows.php.net/download/#php-5.3',
+          'name' => 'Windows 5.3.22 binaries and source',
+        ),
+      ),
+      'date' => '21 Feb 2013',
+      'museum' => false,
+    ),
+    '5.3.21' => 
+    array (
+      'announcement' => 
+      array (
+        'English' => '/releases/5_3_21.php',
+      ),
+      'source' => 
+      array (
+        0 => 
+        array (
+          'filename' => 'php-5.3.21.tar.bz2',
+          'name' => 'PHP 5.3.21 (tar.bz2)',
+          'md5' => '1b214fc19bb5f5c0902ba27c74d5f4a2',
+          'date' => '17 Jan 2013',
+        ),
+        1 => 
+        array (
+          'filename' => 'php-5.3.21.tar.gz',
+          'name' => 'PHP 5.3.21 (tar.gz)',
+          'md5' => 'f47fbe3407520e5d9d895168950aa683',
+          'date' => '17 Jan 2013',
+        ),
+        2 => 
+        array (
+          'link' => 'http://windows.php.net/download/#php-5.3',
+          'name' => 'Windows 5.3.21 binaries and source',
+        ),
+      ),
+      'date' => '17 Jan 2013',
+      'museum' => false,
+    ),
+    '5.3.20' => 
+    array (
+      'announcement' => 
+      array (
+        'English' => '/releases/5_3_20.php',
+      ),
+      'source' => 
+      array (
+        0 => 
+        array (
+          'filename' => 'php-5.3.20.tar.bz2',
+          'name' => 'PHP 5.3.20 (tar.bz2)',
+          'md5' => '00241b9e89e93adf3baac32c56211e4e',
+          'date' => '20 Dec 2012',
+        ),
+        1 => 
+        array (
+          'filename' => 'php-5.3.20.tar.gz',
+          'name' => 'PHP 5.3.20 (tar.gz)',
+          'md5' => '1e202851bf2ba1ee96d7dc5b48944119',
+          'date' => '20 Dec 2012',
+        ),
+        2 => 
+        array (
+          'link' => 'http://windows.php.net/download/#php-5.3',
+          'name' => 'Windows 5.3.20 binaries and source',
+        ),
+      ),
+      'date' => '20 Dec 2012',
+      'museum' => false,
+    ),
     '5.3.19' => 
     array (
       'announcement' => 
@@ -450,32 +879,6 @@ $OLDRELEASES = array (
         ),
       ),
       'date' => '14 June 2012',
-      'museum' => false,
-    ),
-    '5.4.0' => 
-    array (
-      'announcement' => 
-      array (
-        'English' => '/releases/5_4_0.php',
-      ),
-      'source' => 
-      array (
-        0 => 
-        array (
-          'filename' => 'php-5.4.0.tar.bz2',
-          'name' => 'PHP 5.4.0 (tar.bz2)',
-          'md5' => '04bb6f9d71ea86ba05685439d50db074',
-          'date' => '01 March 2012',
-        ),
-        1 => 
-        array (
-          'filename' => 'php-5.4.0.tar.gz',
-          'name' => 'PHP 5.4.0 (tar.gz)',
-          'md5' => '46b72e274c6ea7e775245ffdb81c9ce5',
-          'date' => '01 March 2012',
-        ),
-      ),
-      'date' => '01 March 2012',
       'museum' => false,
     ),
     '5.3.13' => 

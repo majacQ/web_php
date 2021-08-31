@@ -63,6 +63,16 @@ include $_SERVER['DOCUMENT_ROOT'] . '/include/last_updated.inc';
 
 // -----------------------------------------------------------------------------
 
+// SETBETA Setting for temporary banners
+if(isset($_GET['setbeta']) && !headers_sent()) {
+    global $MYSITE;
+    myphpnet_setbeta( (bool) $_GET['setbeta']);
+    myphpnet_save();
+    header("Location: " . $MYSITE);
+    exit;
+}
+
+
 // Load in the user preferences
 function myphpnet_load()
 {
@@ -166,12 +176,15 @@ function myphpnet_save()
 
     // Set all the preferred values for a year
     mirror_setcookie("MYPHPNET", join(",", $MYPHPNET), 60*60*24*365);
+
 }
 
 function myphpnet_setbeta($bool = false) {
     global $MYPHPNET;
 
-    $MYPHPNET[4] = (bool)$bool;
+    $bool = (bool) $bool;
+
+    $MYPHPNET[4] = (bool) $bool;
 }
 function myphpnet_beta() {
     global $MYPHPNET;
@@ -202,8 +215,10 @@ function google_cse($default = '', $lang = 'en') {
 <script type="text/javascript"> 
   google.load('search', '1', {language : '<?php echo $lang; ?>', style : google.loader.themes.MINIMALIST});
   google.setOnLoadCallback(function() {
-    var customSearchOptions = {};  var customSearchControl = new google.search.CustomSearchControl(
+    var customSearchOptions = {};
+    var customSearchControl = new google.search.CustomSearchControl(
       '011570197911755000456:fip9wopfz_u', customSearchOptions);
+    customSearchControl.setLinkTarget(google.search.Search.LINK_TARGET_SELF);
     customSearchControl.setResultSetSize(google.search.Search.FILTERED_CSE_RESULTSET);
     var options = new google.search.DrawOptions();
     options.setAutoComplete(true);

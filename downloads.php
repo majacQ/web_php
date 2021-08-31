@@ -19,6 +19,7 @@ $SIDEBAR_DATA = '
  <li><a href="http://publib-b.boulder.ibm.com/Redbooks.nsf/RedpieceAbstracts/redp3639.html">AS/400</a></li>
  <li><a href="http://www.ampps.com/">Mac OS X (AMPPS)</a></li>
  <li><a href="http://www.mamp.info/">Mac OS X (MAMP)</a></li>
+ <li>BitNami (<a href="http://bitnami.com/stack/wamp">Windows</a>, <a href="http://bitnami.com/stack/mamp">MacOSX</a>, <a href="http://bitnami.com/stack/lamp">Linux</a>)</li>
  <li><a href="http://developer.novell.com/wiki/index.php/PHP_for_NetWare">Novell NetWare</a></li>
  <li><a href="http://os2ports.smedley.info/index.php?page=php-5">OS/2</a></li>
  <li><a href="http://www.cp15.org/php/">RISC OS</a></li>
@@ -83,22 +84,25 @@ site_header("Downloads",
     )
 );
 ?>
-<a name="v5"></a>
+<a id="v5"></a>
 <?php
-$SHOW_COUNT = 2;
+$SHOW_COUNT = 3;
 $MAJOR = 5;
-for ($i=1; $i<=$SHOW_COUNT; ++$i) {
-list($v, $a) = each($RELEASES[$MAJOR]);
 
+$releases = array_slice($RELEASES[$MAJOR], 0, $SHOW_COUNT);
+$rows = array_chunk($releases, 2, $preserve_keys = true);
+
+$i = 0;
+foreach ($rows as $row) {
+   echo "<div class='row-fluid'>\n";
+   foreach ($row as $v => $a) {
+       $stable = $i++ === 0 ? "(Current Stable)" : "(Old Stable)";
 ?>
-<?php if ($i == 1) { ?>
-    <h1 id="v<?php echo $v; ?>">PHP <?php echo $v ?> (Current stable)</h1>
-<?php } else { ?>
-    <h1 id="v<?php echo $v; ?>">PHP <?php echo $v ?> (Old stable)</h1>
-<?php } ?>
+<div class="span6">
+  <h1 id="v<?php echo $v; ?>">PHP <?php echo "$v $stable"; ?></h1>
 
-<h2>Complete Source Code</h2>
-<ul>
+  <h4>Complete Source Code:</h4>
+  <ul>
 <?php
 foreach($a["source"] as $rel) {
     echo " <li>\n  ";
@@ -115,22 +119,31 @@ foreach($a["source"] as $rel) {
     echo " </li>\n";
 }
 ?>
-<li>
-    <a href="/ChangeLog-<?php echo $MAJOR; ?>.php#<?php echo urlencode($v); ?>">Changelog for PHP <?php echo $v; ?></a>
-</li>
-</ul>
-
-<hr />
+    <li>
+      <a href="/ChangeLog-<?php echo $MAJOR; ?>.php#<?php echo urlencode($v); ?>">Changelog for PHP <?php echo $v; ?></a>
+    </li>
+  </ul>
+</div>
 <?php
+    }
+    echo "</div>\n";
 } // for
 ?>
+
+<hr/>
 
 <h1>GPG Keys</h1>
 <p>
 The releases are tagged and signed in the <a href='git.php'>PHP Git Repository</a>.
-The follwing official GnuPG keys of the current PHP Release Manager can be used
+The following official GnuPG keys of the current PHP Release Manager can be used
 to verify the tags:
 </p>
+<h2>PHP 5.5</h2>
+<pre>
+pub   4096R/7267B52D 2012-03-20 [expires: 2016-03-19]
+      Key fingerprint = 0B96 609E 270F 565C 1329  2B24 C13C 70B8 7267 B52D
+uid                  David Soria Parra &lt;dsp@php.net&gt;
+</pre>
 <h2>PHP 5.4</h2>
 <pre>
 pub   2048D/5DA04B5D 2012-03-19
@@ -152,5 +165,5 @@ uid                  Johannes Schlüter &lt;johannes@schlueters.de&gt;
 uid                  Johannes Schlüter &lt;johannes@php.net&gt;
 </pre>
 <?php
-site_footer();
+site_footer(array('sidebar' => $SIDEBAR_DATA));
 

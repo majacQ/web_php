@@ -402,18 +402,24 @@ function manual_notes_beta() {
     // and it's extended form with a [+] image
     $addnotelink = '/manual/add-note.php?sect=' . $filename .
                    '&amp;redirect=' . $_SERVER['BASE_HREF'];
-    $addnotesnippet =
-        make_link($addnotelink, make_image('notes-add.gif', 'add a note', FALSE, 'class="middle"')) .
-        ' <small>' .
-        make_link($addnotelink, 'add a note') .
-        '</small>';
+    $addnotesnippet = make_link(
+        $addnotelink,
+        "<img src='/images/notes-add@2x.png' alt='add a note' width='12' height='12' /> <small>add a note</small>"
+    );
+
+    $num_notes = count($notes);
+    if ($num_notes) {
+        $num_notes = "<span class=\"count\"><strong>$num_notes note" . ($num_notes == 1 ? '' : 's') . "</strong></span>";
+    } else {
+        $num_notes = null;
+    }
 
     echo <<<END_USERNOTE_HEADER
 
 <section id="usernotes">
  <div class="head">
   <span class="action">{$addnotesnippet}</span>
-  <h3 class="title">User Contributed Notes</h3>
+  <h3 class="title">User Contributed Notes {$num_notes}</h3>
  </div>
 END_USERNOTE_HEADER;
 
@@ -522,21 +528,21 @@ VOTEDIV;
 
         make_popup_link(
             'https://master.php.net/manage/user-notes.php?action=edit+' . $id,
-            make_image('notes-edit.gif', 'edit note'),
+            '<img src="/images/notes-edit@2x.png" height="12" width="12" alt="edit note" />',
             'admin',
             'scrollbars=yes,width=650,height=400'
         ) . "\n   " .
 
         make_popup_link(
             'https://master.php.net/manage/user-notes.php?action=reject+' . $id,
-            make_image('notes-reject.gif', 'reject note'),
+            '<img src="/images/notes-reject@2x.png" height="12" width="12" alt="reject note" />',
             'admin',
             'scrollbars=no,width=300,height=200'
         ) . "\n   " .
 
         make_popup_link(
             'https://master.php.net/manage/user-notes.php?action=delete+' . $id,
-            make_image('notes-delete.gif', 'delete note'),
+            '<img src="/images/notes-delete@2x.png" height="12" width="12" alt="delete note" />',
             'admin',
             'scrollbars=no,width=300,height=200'
         ) . "\n  </span>";
@@ -547,7 +553,7 @@ VOTEDIV;
 
     echo <<<USER_NOTE_TEXT
 
- <a name="$id"></a><div class="note">{$votediv}{$name}{$admin}<div class="date" title="$fdatestr"><strong>{$datestr}</strong></div>
+  <div class="note" id="$id">{$votediv}{$name}{$admin}<div class="date" title="$fdatestr"><strong>{$datestr}</strong></div>
   <div class="text" id="Hcom{$id}">
 {$text}
   </div>
@@ -568,53 +574,56 @@ function manual_setup_beta($setup) {
 
     $siblings = array();
     foreach($setup["toc"] as $entry) {
+        // We strip out any class prefix here, we only want method names
+        $methodname = $entry[1];
+        if(strpos($entry[1], '::') !== false && strpos($entry[1], ' ') === false) {
+            list($classname, $methodname) = explode('::', $entry[1]);
+        }
         $siblings[] = array(
-            "title" => $entry[1],
+            "title" => $methodname,
             "link"  => $entry[0],
             "current" => $setup["this"][0] == $entry[0],
         );
     }
+    
     $menu = array();
     foreach(array_reverse($setup["parents"]) as $parent) {
         $menu[] = array(
             "title" => $parent[1],
             "link"  => $parent[0],
-            "children" => array(),
-        );
-    }
-    // The index manual page has no parent..
-    if ($setup["up"][0]) {
-        $menu[] = array(
-            "title" => $setup["up"][1],
-            "link"  => $setup["up"][0],
-            "children" => $siblings,
         );
     }
 
+    // The index manual page has no parent..
+    if ($setup["up"][0]) {
+        $last_item = array(
+            "title" => $setup["up"][1],
+            "link"  => $setup["up"][0],
+        );
+        $siblings = array(array_merge($last_item, array("children" => $siblings)));
+        $menu[] = $last_item;
+    }
+    
     $_SERVER["BASE_PAGE"] = "/manual/" . $setup["head"][1] . "/" . $setup["this"][0];
 
     $config = array(
         "current" => "docs",
-        "leftmenu" => $menu,
+        "leftmenu" => $siblings,
+        "breadcrumbs" => $menu,
         "meta-navigation" => array(
             "contents" => $setup["home"][0],
             "index"    => $setup["up"][0],
             "prev"     => $setup["prev"][0],
             "next"     => $setup["next"][0],
         ),
-        "lang" => $setup["head"][1],
+        "lang"         => $setup["head"][1],
+        "thispage"     => $setup["this"][0],
     );
     site_header($setup["this"][1] . " - Manual ", $config);
-    echo '
-    <aside id="quicktoc">
-        <div class="language">'.manual_language_chooser($setup['head'][1], $setup['this'][0]).'</div>
-        <div class="content"></div>
-        <div class="links">
-            <a title="Report a bug" href="http://bugs.php.net/report.php?bug_type=Documentation+problem&amp;manpage=' . $PGI['this'][0] . '">Report a bug</a>
-            <a title="Edit this page" href="https://edit.php.net/?project=PHP&amp;perm=' . $PGI['head'][1] . '/' . $PGI['this'][0] . '">Edit this page</a>
-        </div>
-    </aside>';
-    echo '</aside>';
+    
+    echo '<div class="change-language">' . manual_language_chooser($config["lang"], $config["thispage"]) . '</div>';
+
+
 }
 function manual_language_chooser($currentlang, $currentpage) {
     global $ACTIVE_ONLINE_LANGUAGES;
@@ -627,15 +636,16 @@ function manual_language_chooser($currentlang, $currentpage) {
     }
 
     // Print out the form with all the options
-    $rt = '<h5>Language</h5>'.
-          '<form action="/manual/change.php" method="get" id="changelang" name="changelang">'.
+    $rt = '<form action="/manual/change.php" method="get" id="changelang" name="changelang">'.
     	  '<fieldset>'.
-	  '<select onchange="document.changelang.submit()" name="page" id="changelang-langs">';
-    foreach ($links as $link) {
-        $rt.= "<option value='{$link[0]}' " .($link[2] == $currentlang ? "selected" : ""). ">{$link[1]}</option>\n";
-    }
-	$rt.= '<option value="help-translate.php">Other</option>'.
-	      '</select>'.
+    	  '
+          <p>Change language: 
+          <select onchange="document.changelang.submit()" name="page" id="changelang-langs">';
+                foreach ($links as $link) {
+                    $rt.= "<option value='{$link[0]}' " .($link[2] == $currentlang ? "selected" : ""). ">{$link[1]}</option>\n";
+                }
+    	$rt.= '<option value="help-translate.php">Other</option>'.
+	      '</select></p>'.
               '</fieldset>'.
               '</form>';
 	return $rt;
@@ -643,9 +653,9 @@ function manual_language_chooser($currentlang, $currentpage) {
 
 function manual_header_beta(){}
 function manual_footer_beta() {
-    echo "</section>";
 
     manual_notes();
+    echo "</section>";
     site_footer(array('elephpants' => true));
 }
 
