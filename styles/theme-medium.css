@@ -1,36 +1,28 @@
-/**
- *
- *  COLORS:       | HEX     |
- * ---------------+---------+
- *  light-blue    | #E2E4EF |
- * ---------------+---------+
- *  medium-blue   | #8892BF |
- * ---------------+---------+
- *  dark-blue     | #4F5B93 |
- * ---------------+---------+
- *
- */
-
+:root {
+  --background-color: var(--dark-grey-color);
+  --background-text-color: #CCC;
+  --content-background-color: #F2F2F2;
+  --content-text-color: var(--dark-grey-color);
+}
 
 html {
-  background: #333 url('/images/bg-texture-00.svg');
-  color: #CCC;
+  background-color: var(--background-color);
+  background-image: url('/images/bg-texture-00.svg');
+  color: var(--background-text-color);
+  scrollbar-color: hsl(0, 0%, 67%) transparent;
 }
+
 #layout-content {
-  background:#F2F2F2;
-  color:#333;
+  background: var(--content-background-color);
+  color: var(--content-text-color);
 }
 #layout-content:not(:only-child) {
   border-right:.25rem solid #666;
 }
 
-abbr {
-  border-color: #8892BF;
-}
-
 h1, h2, h3, h4, h5, h6 {
   font-weight: 500;
-  color:#333
+  color: var(--content-text-color)
 }
 header.title,
 h1:after,
@@ -50,7 +42,7 @@ h3:after {
 
 a:link,
 a:visited {
-  color: #ccc;
+  color: var(--background-text-color);
 }
 #layout-content a:link,
 #layout-content a:visited {
@@ -60,8 +52,8 @@ a:hover,
 a:focus,
 #layout-content a:hover,
 #layout-content a:focus {
-  color: #AE508D;
-  border-color: #AE508D;
+  color: var(--medium-magenta-color);
+  border-color: var(--medium-magenta-color);
   outline:0;
 }
 
@@ -79,21 +71,23 @@ dl.qandaentry {
 }
 
 h1.refname {
-  color: #793862;
+  color: var(--dark-magenta-color);
 }
 
 
 .interfacename a,
 .fieldsynopsis .type,
 .methodsynopsis .type,
-.constructorsynopsis .type {
+.constructorsynopsis .type,
+.destructorsynopsis .type {
   color:#693;
 }
 
 .classsynopsisinfo .modifier,
 .fieldsynopsis .modifier,
 .methodsynopsis .modifier,
-.constructorsynopsis .modifier {
+.constructorsynopsis .modifier,
+.destructorsynopsis .modifier {
   color: #936;
 }
 
@@ -107,10 +101,10 @@ h1.refname {
 
 .title a,
 .title {
-  color: #793862;
+  color: var(--dark-magenta-color);
 }
 .title time {
-  color: #333;
+  color: var(--content-text-color);
 }
 
 .methodname b,
@@ -144,7 +138,7 @@ div.tip {
 }
 blockquote.note {
   background-color: #E6E6E6;
-  border-color: #ccc;
+  border-color: var(--background-text-color);
 }
 div.caution {
   background: #fcfce9;
@@ -189,81 +183,578 @@ div.warning a:focus {
 }
 /* }}} */
 
-
-/* {{{ Navbar */
-.navbar .nav > li > a:focus,
-.navbar .nav > li > a:hover {
-  color: #333333;
-}
-.navbar .nav > .active > a {
-  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
-}
-.navbar .brand,
-.navbar .nav > li > a {
-  color: #E2E4EF;
-  border:0;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-}
-.navbar .brand:hover,
-.navbar .nav > li > a:hover,
-.navbar .brand:focus,
-.navbar .nav > li > a:focus {
-  color: #fff;
-}
-.navbar .nav > li > a:focus,
-.navbar .nav > li > a:hover {
-  background-color: transparent;
-  color: #fff;
-}
-.navbar .nav .active > a,
-.navbar .nav .active > a:hover,
-.navbar .nav .active > a:focus {
-  color: #fff;
-  background-color: #4F5B93;
-}
-.navbar .navbar-search .search-query {
-  background-color: #fff;
-  color: #333;
-  text-shadow: 0 1px 0 #fff;
-  border:0;
-  border-radius:2px;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,.2);
-}
-.navbar .navbar-search .search-query:focus {
-  box-shadow: inset 0 1px 2px rgba(0,0,0,.2);
-}
-.navbar .navbar-search .search-query:-moz-placeholder {
-  color: #999;
-}
-.navbar .navbar-search .search-query:-ms-input-placeholder {
-  color: #999;
-}
-.navbar .navbar-search .search-query::-webkit-input-placeholder {
-  color: #999;
-}
+/* {{{ 2024 Navbar */
 .navbar {
-  border-color:#4F5B93;
-  background:#8892BF;
-  box-shadow: 0 .25em .25em  rgba(0,0,0,.1);
+  /* Ensure the navbar shadow is rendered above the main content */
+  position: relative;
+  z-index: 1000;
+  background-color: var(--dark-blue-color);
+  box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.2);
 }
-.navbar .brand {
-  color: #fff;
+
+.navbar * {
+  box-sizing: border-box;
 }
-.navbar a {
-  text-shadow: 0 1px 0 #fff;
+
+.navbar *:focus-visible {
+  outline: 2px solid var(--light-magenta-color);
+  outline-offset: 2px;
+}
+
+.navbar__inner {
+  display: flex;
+  height: 64px;
+  padding: 0px 16px;
+  margin: 0 auto;
+}
+
+.navbar__brand {
+  display: flex;
+  align-items: center;
+  border: none;
+}
+
+.navbar__brand img {
+  height: 40px;
+}
+
+.navbar__nav {
+  display: flex;
+  margin: 0;
+  margin-left: 24px;
+}
+
+.navbar__item {
+  display: block;
+  list-style: none;
+}
+
+.navbar [hidden] {
+  display: none;
+}
+
+.navbar__link {
+  display: flex;
+
+  align-items: center;
+
+  height: 100%;
+  padding: 0px 12px;
+
+  font-size: 16px;
+  color: #ffffff;
+  text-decoration: none;
+
+  border-bottom: none;
+
+  transition: color 0.25s ease-out;
+}
+
+/* TODO: Convert to BEM modifier */
+.navbar__link--active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.navbar__link,
+.navbar__link:link,
+.navbar__link:visited {
+  color: hsl(231, 100%, 93%);
+}
+
+.navbar__link--active,
+.navbar__link:hover,
+.navbar__link:link:hover,
+.navbar__link:visited:hover {
+  color: white;
+}
+
+.navbar__offcanvas {
+  display: flex;
+}
+
+.navbar__search-form,
+.navbar__search-button {
+  display: none;
+
+  flex-grow: 1;
+
+  max-width: 300px;
+  padding: 8px 8px;
+
+  background-color: #404f82;
+  border: 1px solid #6a78be;
+  border-radius: 8px;
+}
+
+.navbar__search-form label {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__search-form svg,
+.navbar__search-button svg {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  color: hsl(225, 41%, 69%);
+}
+
+.navbar__search-form:focus-within,
+.navbar__search-button:hover {
+  border-color: #94a3ed;
+  border-width: 1px;
+  outline: none;
+}
+
+.navbar__search-input {
+  width: 100%;
+  padding: 0;
+
+  color: white;
+
+  background-color: transparent;
+  border: none;
+}
+
+.navbar__search-input:focus-visible {
+  outline: none;
+}
+
+.navbar__search-input::placeholder,
+.navbar__search-button {
+  color: hsla(230, 72%, 84%);
+  opacity: 1;
+}
+
+.navbar__right {
+  display: flex;
+  flex-grow: 1;
+  justify-content: end;
+  padding: 12px 0px;
+}
+
+.navbar_icon-item--visually-aligned {
+  margin-right: -8px;
+}
+
+.navbar__backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* Ensure to render above other non static elements */
+  z-index: 1010;
+
+  display: none;
+
+  width: 100vw;
+  height: 100vh;
+
+  background-color: #000;
+  opacity: 0.25;
+}
+
+.navbar__icon-item,
+.navbar__icon-item:link,
+.navbar__icon-item:visited {
+  padding: 8px;
+
+  color: hsl(222, 80%, 87%);
+
+  cursor: pointer;
+
+  background-color: transparent;
+  border: 0;
+  outline: 0;
+
+  transition: color 0.25s ease-out;
+}
+
+.navbar__icon-item:hover {
+  color: white;
+  opacity: 1;
+}
+
+.navbar__icon-item svg {
+  display: block;
+}
+
+.navbar__close-button {
+  position: absolute;
+  top: 13px;
+  right: 16px;
+}
+
+.navbar__release img {
+  height: 22px;
+}
+
+/* We use a desktop-first approach for the offcanvas navigation styles */
+@media (max-width: 992px) {
+  .navbar__offcanvas {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1020;
+
+    flex-grow: 1;
+    flex-direction: column;
+
+    width: 240px;
+    max-width: 100%;
+    padding: 24px 0px;
+
+    visibility: hidden;
+
+    background-color: var(--dark-blue-color);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.175);
+
+    transition: transform 0.3s ease;
+    transform: translateX(100%);
+  }
+
+  .navbar__offcanvas.show {
+    display: flex;
+    transform: translateX(0);
+  }
+
+  .navbar__nav {
+    flex-direction: column;
+    order: 1;
+    margin-top: 40px;
+    margin-left: 0;
+  }
+
+  .navbar__link {
+    padding: 16px 24px;
+    font-size: 18px;
+  }
+
+  .navbar__search-button {
+    display: none;
+  }
+
+  /* TODO: Convert to BEM modifier */
+  .navbar__backdrop.show {
+    display: block;
+  }
+}
+
+@media (min-width: 992px) {
+  .navbar__icon-item {
+    display: none;
+  }
+
+  .navbar__search-form,
+  .navbar__search-button {
+    display: flex;
+    align-items: center;
+    text-align: left;
+  }
+}
+
+@media (min-width: 1200px) {
+  .navbar__link {
+    padding: 8px 16px;
+  }
+}
+/* }}} */
+
+/* {{{ Search modal */
+.search-modal__backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1030;
+
+  justify-content: center;
+
+  visibility: hidden;
+
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+
+  transition: opacity 0.1s ease-out;
+}
+
+.search-modal__backdrop.showing,
+.search-modal__backdrop.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+.search-modal__backdrop.hiding {
+  visibility: visible;
+  opacity: 0;
+}
+
+.search-modal,
+.search-modal * {
+  box-sizing: border-box;
+}
+
+.search-modal {
+  display: flex;
+
+  flex-direction: column;
+
+  width: 100%;
+  height: 100%;
+  margin: 0;
+
+  background-color: var(--dark-grey-color);
+}
+
+.search-modal *:focus-visible {
+  outline: 2px solid var(--light-magenta-color);
+  outline-offset: 2px;
+}
+
+.search-modal__header {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+}
+
+.search-modal__form {
+  display: flex;
+
+  flex-grow: 1;
+
+  align-items: center;
+
+  min-width: 0;
+  padding-left: 12px;
+
+  background-color: hsl(0, 0%, 25%);
+  border-radius: 8px;
+}
+
+.search-modal__input-icon {
+  display: block;
+  flex-shrink: 0;
+  width: 24px;
+}
+
+.search-modal__input-icon svg {
+  display: block;
+  color: hsl(0, 0%, 54%);
+}
+
+.search-modal__input {
+  flex-grow: 1;
+
+  min-width: 0;
+  height: 44px;
+  padding-left: 12px;
+
+  color: white;
+
+  background-color: transparent;
+  border: none;
+}
+
+.search-modal__input:focus {
+  border-width: 1px;
+  outline: none;
+}
+
+.search-modal__input::placeholder {
+  color: rgba(255, 255, 255, 0.56);
+  opacity: 1;
+}
+
+/* TODO: The icon button styles were copied from the navbar. */
+/* We should refactor this into a shared component when possible. */
+.search-modal__close {
+  padding: 8px;
+  margin-right: -8px; /* Compensate for button padding */
+  margin-left: 8px;
+
+  color: #e8e8e8;
+
+  cursor: pointer;
+
+  background-color: transparent;
+  border: 0;
+  outline: 0;
+  opacity: 0.65;
+
+  transition: opacity 0.15s ease-out;
+}
+
+.search-modal__close svg {
+  display: block;
+  width: 24px;
+  fill: currentColor;
+}
+
+.search-modal__close:hover,
+.search-modal__close:focus {
+  color: white;
+  opacity: 1;
+}
+
+.search-modal__results {
+  height: 100%;
+  padding: 0 16px;
+  overflow-y: scroll;
+
+  scrollbar-color: hsl(0, 0%, 67%) transparent;
+  scrollbar-width: thin;
+}
+
+.search-modal__result {
+  display: flex;
+
+  align-items: center;
+
+  padding: 10px;
+  padding-left: 14px;
+
+  line-height: 1.2;
+
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.search-modal__result:hover {
+  /* Simulates 33% opacity by blending --dark-blue-color with --dark-grey-color.
+   * TODO: Use rgb(var(--dark-blue-color) / 33%) once widely supported.
+   * More info: https://caniuse.com/mdn-css_types_color_rgb_relative_syntax */
+  background-color: #3c4053;
+}
+
+.search-modal__result[aria-selected="true"] {
+  background-color: var(--dark-blue-color);
+}
+
+.search-modal__result-content {
+  flex-grow: 1;
+  min-width: 0; /* Allow text truncation */
+}
+
+.search-modal__result-name {
+  margin-bottom: 6px;
+  overflow: hidden;
+
+  color: #e6e6e6;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-modal__result:hover .search-modal__result-name {
+  color: white;
+}
+
+.search-modal__result-description {
+  overflow: hidden;
+
+  font-size: 14px;
+  color: var(--background-text-color);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-modal__result:hover .search-modal__result-description {
+  color: white;
+  opacity: 0.6;
+}
+
+.search-modal__result-icon {
+  margin-right: 12px;
+}
+
+.search-modal__result-icon svg {
+  display: block;
+  width: 24px;
+  fill: hsla(0, 0%, 100%, 0.3);
+}
+
+.search-modal__helper-text {
+  display: none;
+  padding: 10px 16px;
+  font-size: 14px;
+}
+
+@media (min-width: 992px) {
+  .search-modal {
+    max-width: 560px;
+    height: calc(100% - 1rem * 2);
+    margin: 1rem auto;
+    border-radius: 16px;
+  }
+
+  .search-modal__header {
+    padding: 18px 20px;
+  }
+
+  .search-modal__input {
+    height: 52px;
+    font-size: 18px;
+  }
+
+  .search-modal__close {
+    margin-right: -10px; /* Compensate for button padding */
+  }
+
+  .search-modal__results {
+    padding: 0 20px;
+  }
+
+  .search-modal__helper-text {
+    display: block;
+    padding: 18px 20px;
+  }
+
+  .search-modal__helper-text kbd {
+    display: inline-block;
+
+    padding: 0px 4px;
+
+    font-family: inherit;
+
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+}
+/* }}} */
+
+/* {{{ Lookup form */
+
+.lookup-form {
+  max-width: 540px;
+}
+
+.lookup-form *:focus-visible {
+  outline: 2px solid var(--light-magenta-color);
 }
 
 /* }}} */
 
+/* {{{ Menu */
+
+.menu .menu__item ~ .menu__item {
+  margin-top: 16px;
+}
+
+.menu__link {
+  font-size: 1.25rem;
+  border: none;
+}
+
+/* }}} */
 
 /* {{{ User notes */
 #usernotes .count {
-  background-color: #793862;
+  background-color: var(--dark-magenta-color);
   color: #fff;
   border-radius: 4px;
 }
 #usernotes .note .name {
-  color: #333;
+  color: var(--content-text-color);
 }
 #usernotes .note .date {
   color: #666;
@@ -275,7 +766,7 @@ div.warning a:focus {
   transition: opacity 0.4s;
 }
 #usernotes .note .votes .tally {
-  color: #333;
+  color: var(--content-text-color);
 }
 #usernotes .note .votes a {
   transition: border 0.4s;
@@ -286,13 +777,13 @@ div.warning a:focus {
 /* {{{ Tables */
 .doctable,
 .segmentedlist {
-  border-color: #ccc;
+  border-color: var(--background-text-color);
 }
 .doctable thead tr,
 .segmentedlist thead tr {
   border-color: #C4C9DF;
-  border-bottom-color: #8892BF;
-  color: #333;
+  border-bottom-color: var(--medium-blue-color);
+  color: var(--content-text-color);
 }
 .doctable th,
 .segmentedlist th {
@@ -300,7 +791,7 @@ div.warning a:focus {
 }
 .doctable tr,
 .segmentedlist tr {
-  border-color: #ccc
+  border-color: var(--background-text-color)
 }
 .doctable tbody tr:nth-child(odd),
 .segmentedlist tbody tr:nth-child(odd) {
@@ -338,7 +829,7 @@ div.warning a:focus {
   background-color: transparent;
 }
 .phpcode span.comment {
-  color: #4F5B93;
+  color: var(--dark-blue-color);
   background-color: transparent;
 }
 div.phpcode span.default {
@@ -355,11 +846,13 @@ div.phpcode span.string {
 }
 
 .para var,
-.simpara var
+.simpara var,
+.para .computeroutput,
+.simpara .computeroutput
 {
   background-color: #E6E6E6;
   border-radius: 2px;
-  color: #333;
+  color: var(--content-text-color);
   padding: 2px 4px;
   white-space: nowrap;
   font-style: normal;
@@ -384,14 +877,14 @@ var.reset
 }
 #layout-content a.genanchor:hover,
 #layout-content a.genanchor:focus {
-    color: #333;
+    color: var(--content-text-color);
     border-bottom: none;
 }
 /* }}} */
 
 
 .warn {
-  border-color: #4F5B93;
+  border-color: var(--dark-blue-color);
   background-color: #fff;
   border-radius: 0 0 2px 2px;
 }
@@ -407,8 +900,12 @@ aside.tips div.border {
 aside.tips h3 {
   color:#E6E6E6;
 }
+aside.tips li {
+  line-height: 1.2rem; /* avoid gaps in wrapped links */
+  margin-bottom: 0.5rem; /* seperate each link item a little bit from eachother */
+}
 aside.tips a {
-  color:#ccc;
+  color: var(--background-text-color);
   border-bottom:1px dotted #666;
 }
 aside.tips .panel > a:after,
@@ -422,16 +919,16 @@ aside.tips .panel > a {
   border-bottom: none;
 }
 aside.tips .panel > a:hover:after {
-  border-color:#AE508D;
+  border-color:var(--medium-magenta-color);
 }
 aside.tips a:hover,
 aside.tips a:focus {
-  color:#AE508D;
-  border-color:#AE508D;
+  color:var(--light-magenta-color);
+  border-color:var(--light-magenta-color);
 }
 
 .soft-deprecation-notice {
-  color: #333;
+  color: var(--dark-grey-color);
   border-color: #eecdde;
   background-color: #f9ecf2;
 }
@@ -456,8 +953,12 @@ aside.tips a:focus {
   border-top-color:#666;
 }
 .layout-menu ul.child-menu-list li.current a {
-  color:#AE508D;
-  border-bottom-color:#AE508D;
+  color:var(--light-magenta-color);
+  border-bottom-color:var(--light-magenta-color);
+}
+.layout-menu ul.parent-menu-list li a:hover,
+.layout-menu ul.child-menu-list li a:hover {
+  color:var(--light-magenta-color);
 }
 .layout-menu ul.child-menu-list a {
   border-color: #666;
@@ -487,13 +988,13 @@ div.elephpants img:focus {
 
 .mirror {
 	position: relative;
-	border: 1px solid #ccc;
+	border: 1px solid var(--background-text-color);
 	padding: 20px;
 	margin: 5px;
 }
 .mirror .title img {
 	position: absolute;
-	right: 0px;
+	right: 0;
 }
 .mirror .title {
 	font-size: 1.4em;
@@ -501,10 +1002,11 @@ div.elephpants img:focus {
 }
 
 .headsup {
+  position: relative;
   padding:.25rem 0;
   height:1.5rem;
-  border-bottom:.125rem solid #696;
-  background-color: #9c9;
+  box-shadow: 0 2px 4px 0px rgba(0,0,0,.2);
+  background-color: var(--dark-magenta-color);
   color:#fff;
 }
 
@@ -515,4 +1017,98 @@ div.elephpants img:focus {
   color: #fff;
 }
 
-/* vim: set ts=2 sw=2 et: */
+.thanks-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+@media (min-width: 980px) {
+  .thanks-list {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.thanks {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 1rem;
+  break-inside: avoid;
+  box-shadow: #dddddd 0 .125rem .5rem;
+  border-radius: .25rem;
+  padding: 1rem;
+  background: #F9F9F9;
+}
+@media (min-width: 425px) {
+  .thanks {
+    flex-direction: row;
+  }
+}
+
+.thanks__logo {
+  border: 0;
+  background: #F9F9F9;
+  border-radius: .25rem;
+  padding: .5rem;
+  flex: 0 0 7.5rem;
+  min-width: 5rem;
+  min-height: 5rem;
+  max-height: 5rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  align-self: center;
+  overflow: hidden;
+}
+.thanks__logo--white {
+  background: #FFFFFF;
+  border: 1px solid #f0f0f0;
+}
+.thanks__logo--dark {
+  background: #152536;
+}
+.thanks__logo--osu {
+  background: #bc450c;
+}
+.thanks__logo--redpill {
+  background: #b73e40;
+}
+@media (min-width: 425px) {
+  .thanks__logo {
+    align-self: start;
+  }
+}
+
+.thanks__logo img {
+  width: 100%;
+  max-height: 100%;
+  transition: transform 300ms ease-in-out;
+}
+.thanks__logo:hover img {
+  transform: scale(1.1);
+}
+
+.thanks__heading {
+  display: block;
+  font-size: 1.15rem;
+  padding: 0 0 1rem 0;
+  text-align: center;
+}
+@media (min-width: 425px) {
+  .thanks__heading {
+    text-align: left;
+    padding: 0 0 .25rem 0;
+  }
+}
+
+.thanks__description {
+  margin: 0
+}
+
+.replaceable {
+  font-style: italic;
+}

@@ -1,4 +1,4 @@
-<?php // -*- C++ -*-
+<?php
 
 // We need this for error reporting
 include_once __DIR__ . '/errors.inc';
@@ -13,27 +13,27 @@ function tryprefix($lang, $keyword, $prefix)
     $keyword = preg_replace("!\\(.*\\)!", "-", $keyword);
 
     // Try the keyword with the prefix
-    $try = "/manual/${lang}/${prefix}${keyword}.php";
+    $try = "/manual/{$lang}/{$prefix}{$keyword}.php";
     if (@file_exists($_SERVER['DOCUMENT_ROOT'] . $try)) { return $try; }
 
     // Drop out spaces, and try that keyword (if different)
     $nosp = str_replace(" ", "", $keyword);
     if ($nosp != $keyword) {
-        $try = "/manual/${lang}/${prefix}${nosp}.php";
+        $try = "/manual/{$lang}/{$prefix}{$nosp}.php";
         if (@file_exists($_SERVER['DOCUMENT_ROOT'] . $try)) { return $try; }
     }
 
     // Replace spaces with hyphens, and try that (if different)
     $dasp = str_replace(" ", "-", $keyword);
     if ($dasp != $keyword) {
-        $try = "/manual/${lang}/${prefix}${dasp}.php";
+        $try = "/manual/{$lang}/{$prefix}{$dasp}.php";
         if (@file_exists($_SERVER['DOCUMENT_ROOT'] . $try)) { return $try; }
     }
 
     // Remove hyphens (and underscores), and try that (if different)
     $noul = str_replace("-", "", $keyword);
     if ($noul != $keyword) {
-        $try = "/manual/${lang}/${prefix}${noul}.php";
+        $try = "/manual/{$lang}/{$prefix}{$noul}.php";
         if (@file_exists($_SERVER['DOCUMENT_ROOT'] . $try)) { return $try; }
     }
 
@@ -41,7 +41,7 @@ function tryprefix($lang, $keyword, $prefix)
     $keyword = urldecode($keyword);
     $noul = str_replace("\\", "-", $keyword);
     if ($noul != $keyword) {
-        $try = "/manual/${lang}/${prefix}${noul}.php";
+        $try = "/manual/{$lang}/{$prefix}{$noul}.php";
         if (@file_exists($_SERVER['DOCUMENT_ROOT'] . $try)) { return $try; }
     }
 
@@ -52,7 +52,7 @@ function tryprefix($lang, $keyword, $prefix)
         if ($pos !== false) {
             $keyword[$pos] = '.';
 
-            $try = "/manual/${lang}/${prefix}${keyword}.php";
+            $try = "/manual/{$lang}/{$prefix}{$keyword}.php";
             if (@file_exists($_SERVER['DOCUMENT_ROOT'] . $try)) { return $try; }
         }
     }
@@ -105,12 +105,12 @@ function find_manual_page($lang, $keyword)
     // open the database, fall back to normal search. Use
     // open rather than popen to avoid any chance of confusion
     // when rsync updates the database
-    $dbh = FALSE;
+    $dbh = false;
     if (class_exists('PDO')) {
-        if (in_array('sqlite', PDO::getAvailableDrivers())) {
+        if (in_array('sqlite', PDO::getAvailableDrivers(), true)) {
             if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/backend/manual-lookup.sqlite')) {
                 try {
-                    $dbh = new PDO( 'sqlite:' . $_SERVER['DOCUMENT_ROOT'] . '/backend/manual-lookup.sqlite', '', '', array( PDO::ATTR_PERSISTENT => TRUE, PDO::ATTR_EMULATE_PREPARES => TRUE) );
+                    $dbh = new PDO( 'sqlite:' . $_SERVER['DOCUMENT_ROOT'] . '/backend/manual-lookup.sqlite', '', '', [PDO::ATTR_PERSISTENT => true, PDO::ATTR_EMULATE_PREPARES => true] );
                 } catch (PDOException $e) {
                     return find_manual_page_slow($lang, $keyword);
                 }
@@ -124,13 +124,11 @@ function find_manual_page($lang, $keyword)
 
     // Try the preferred language first, then the
     // English one in case no page is found
-    $langs = ($lang != 'en') ? array($lang, 'en') : array('en');
+    $langs = ($lang != 'en') ? [$lang, 'en'] : ['en'];
 
-    // Reformat keyword, drop anything in parenthesis --- except a search for the underscore only. (Bug #63490)
-    if ($keyword != '_') {
-        $keyword = str_replace('_', '-', $keyword);
-    }
-    if (strpos($keyword, '(') !== FALSE) {
+    // Reformat keyword, drop anything in parentheses
+    $keyword = str_replace('_', '-', $keyword);
+    if (strpos($keyword, '(') !== false) {
         $keyword = preg_replace("!\\(.*\\)!", "-", $keyword);
     }
 
@@ -172,7 +170,7 @@ function find_manual_page($lang, $keyword)
             if (!$stm) {
                     return find_manual_page_slow($lang, $keyword);
             }
-            $stm->execute(array($lang, "/manual/{$lang}/{$_keyword}", $keyword));
+            $stm->execute([$lang, "/manual/{$lang}/{$_keyword}", $keyword]);
 
         // Some partially specified URL is used
         } else {
@@ -183,11 +181,11 @@ function find_manual_page($lang, $keyword)
             //        if this change remains, adjust the gen-phpweb-sqlite script accordingly
 
             $SQL = "SELECT name, prio FROM fs WHERE lang = :lang
-                    AND keyword IN (?, ?, ?, ?) ORDER BY keyword = ? DESC, prio LIMIT 1";
+                    AND keyword IN (?, ?, ?, ?, ?) ORDER BY keyword = ? DESC, prio LIMIT 1";
 
             $stm = $dbh->prepare($SQL);
             if ($stm) {
-                $stm->execute(array($lang, $keyword, str_replace('\\', '-', $keyword), str_replace(' ', '', $keyword), str_replace(' ', '-', $keyword), str_replace('-', '', $keyword), $keyword));
+                $stm->execute([$lang, $keyword, str_replace('\\', '-', $keyword), str_replace(' ', '', $keyword), str_replace(' ', '-', $keyword), str_replace('-', '', $keyword), $keyword]);
             }
         }
 
@@ -196,12 +194,11 @@ function find_manual_page($lang, $keyword)
             $r = $stm->fetch(PDO::FETCH_NUM);
 
             if (isset($r[0])) {
-                if(isset($r[1]) && $r[1] > 10 && strlen($keyword) < 4) {
+                if (isset($r[1]) && $r[1] > 10 && strlen($keyword) < 4) {
                     // "Match" found, but the keyword is so short
                     // its probably bogus. Skip it
                     continue;
                 }
-
 
                 // Match found
                 // But does the file really exist?

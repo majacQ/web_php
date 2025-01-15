@@ -1,13 +1,16 @@
 <?php
+
+use phpweb\I18n\Languages;
+
 $_SERVER['BASE_PAGE'] = 'download-docs.php';
 include_once __DIR__ . '/include/prepend.inc';
 
 if (!empty($_GET['active_langs'])) {
-    echo serialize($ACTIVE_ONLINE_LANGUAGES);
+    echo serialize(Languages::ACTIVE_ONLINE_LANGUAGES);
     exit;
 }
 
-$SIDEBAR_DATA='
+$SIDEBAR_DATA = '
 <div class="panel">
     <div class="headline">Online documentation</div>
     <div class="body">
@@ -37,17 +40,15 @@ $SIDEBAR_DATA='
 </div>
 ';
 
-site_header("Download documentation", array("current" => "docs"));
+site_header("Download documentation", ["current" => "docs"]);
 
 // Format to look for
-$formats = array(
+$formats = [
     "Single HTML file" => "html.gz",
-    "Many HTML files"  => "tar.gz",
-#   "Many PDF files"   => "pdf.tar.gz",
-#   "PDF"              => "pdf",
-    "HTML Help file"   => "chm",
+    "Many HTML files" => "tar.gz",
+    "HTML Help file" => "chm",
     "HTML Help file (with user notes)" => "chm",
-);
+];
 ?>
 
 <h1>Download documentation</h1>
@@ -88,12 +89,12 @@ $formats = array(
 </p>
 
 <?php
-$files = array(); $found_formats = array();
+$files = []; $found_formats = [];
 $filepath = $filename = '';
 
 // Go through all possible manual languages
-foreach ($LANGUAGES as $langcode => $language) {
-    if(isset($INACTIVE_ONLINE_LANGUAGES[$langcode]) && $MYSITE !== 'http://docs.php.net/') {
+foreach (Languages::LANGUAGES as $langcode => $language) {
+    if (isset(Languages::INACTIVE_ONLINE_LANGUAGES[$langcode]) && $MYSITE !== 'http://docs.php.net/') {
        continue;
     }
 
@@ -116,17 +117,17 @@ foreach ($LANGUAGES as $langcode => $language) {
             $link_to = "/distributions/manual/$filename";
 
             // Try to get size and changed date
-            $size    = @filesize($filepath);
+            $size = @filesize($filepath);
             $changed = @filemtime($filepath);
 
             // Size available, collect information
-            if ($size !== FALSE) {
-                $files[$langcode][$formatname] = array(
+            if ($size !== false) {
+                $files[$langcode][$formatname] = [
                     $link_to,
-                    (int) ($size/1024),
+                    (int) ($size / 1024),
                     date("j M Y", $changed),
-                    $extension
-                );
+                    $extension,
+                ];
                 $found_formats[$formatname] = 1;
             }
         }
@@ -172,8 +173,8 @@ if (count($found_formats) == 0) {
     foreach ($files as $langcode => $lang_files) {
 
         // See if current language is the preferred one
-        if ($langcode == $LANG) { $preflang = TRUE; }
-        else { $preflang = FALSE; }
+        if ($langcode == $LANG) { $preflang = true; }
+        else { $preflang = false; }
 
         // Highlight manual in preferred language
         if ($preflang) {
@@ -182,7 +183,7 @@ if (count($found_formats) == 0) {
             $cellclass = "";
         }
 
-        echo "<tr>\n<th class=\"subl\">" . $LANGUAGES[$langcode] . "</th>\n";
+        echo "<tr>\n<th class=\"subl\">" . Languages::LANGUAGES[$langcode] . "</th>\n";
 
         foreach ($formats as $formatname => $extension) {
 
@@ -223,4 +224,4 @@ if (count($found_formats) == 0) {
 }
 ?>
 
-<?php site_footer(array('sidebar' => $SIDEBAR_DATA));
+<?php site_footer(['sidebar' => $SIDEBAR_DATA]);

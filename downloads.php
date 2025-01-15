@@ -1,4 +1,4 @@
-<?php // vim: et
+<?php
 $_SERVER['BASE_PAGE'] = 'downloads.php';
 include_once __DIR__ . '/include/prepend.inc';
 include_once __DIR__ . '/include/gpg-keys.inc';
@@ -26,24 +26,50 @@ $SIDEBAR_DATA = '
 ';
 
 site_header("Downloads",
-    array(
-        'link' => array(
-            array(
-                "rel"   => "alternate",
-                "type"  => "application/atom+xml",
-                "href"  => $MYSITE . "releases/feed.php",
-                "title" => "PHP Release feed"
-            ),
-        ),
+    [
+        'link' => [
+            [
+                "rel" => "alternate",
+                "type" => "application/atom+xml",
+                "href" => $MYSITE . "releases/feed.php",
+                "title" => "PHP Release feed",
+            ],
+        ],
         "current" => "downloads",
-    )
+    ],
 );
 ?>
-<?php foreach ($RELEASES as $MAJOR => $major_releases): /* major releases loop start */
+<h1>Downloads &amp; Installation Instructions</h1>
+
+<p>
+    <a href="/manual/install.general.php">Installing PHP</a> is covered
+    thoroughly in the PHP documentation.
+</p>
+
+<h2>Binaries</h2>
+
+<p>
+    <a href="https://windows.php.net/download/">Binaries are available for
+    Microsoft Windows</a>. The PHP project does not currently release binary packages
+    for other platforms such as Linux or macOS, but they are packaged by distributions
+    and other providers. For more information, see:
+
+    <ul>
+        <li>
+            <a href="/manual/install.unix.php">Installation instructions for Unix systems</a>
+        </li>
+        <li>
+            <a href="/manual/install.macosx.php">Installation instructions for macOS</a>
+        </li>
+    </ul>
+</p>
+
+<h2>Source Code</h2>
+<?php $i = 0; foreach ($RELEASES as $MAJOR => $major_releases): /* major releases loop start */
         $releases = array_slice($major_releases, 0, $SHOW_COUNT);
 ?>
 <a id="v<?php echo $MAJOR; ?>"></a>
-<?php $i = 0; foreach ($releases as $v => $a): ?>
+<?php foreach ($releases as $v => $a): ?>
   <?php $mver = substr($v, 0, strrpos($v, '.')); ?>
   <?php $stable = $i++ === 0 ? "Current Stable" : "Old Stable"; ?>
 
@@ -101,4 +127,4 @@ to verify the tags:
 </p>
 
 <?php
-site_footer(array('sidebar' => $SIDEBAR_DATA));
+site_footer(['sidebar' => $SIDEBAR_DATA]);

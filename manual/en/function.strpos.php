@@ -26,13 +26,13 @@ $setup = array (
   ),
   'prev' =>
   array (
-    0 => 'function.strpbrk.php',
-    1 => 'strpbrk',
+    0 => 'ref.strings.php',
+    1 => 'String Functions',
   ),
   'next' =>
   array (
-    0 => 'function.strrchr.php',
-    1 => 'strrchr',
+    0 => 'function.rtrim.php',
+    1 => 'rtrim',
   ),
   'alternatives' =>
   array (
@@ -42,7 +42,6 @@ $setup["toc"] = $TOC;
 $setup["parents"] = $PARENTS;
 manual_setup($setup);
 
-manual_header();
 ?>
 <div id="function.strpos" class="refentry">
  <div class="refnamediv">
@@ -198,4 +197,4 @@ binary-safe.</span></p></blockquote>
  </div>
 
 
-</div><?php manual_footer(); ?>
+</div><?php manual_footer([]); ?>

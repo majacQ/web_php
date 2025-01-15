@@ -1,17 +1,15 @@
 <?php
-$_GET["lang"] = "en";
-if (!isset($_GET["lang"])) {
-    header("Location: http://php.net");
-    exit;
-}
+
+use phpweb\I18n\Languages;
+
+$lang = $_GET["lang"] ?? "en";
 if (empty($_SERVER["DOCUMENT_ROOT"])) {
     $_SERVER["DOCUMENT_ROOT"] = __DIR__ . "/../";
 }
 include __DIR__ . '/../include/prepend.inc';
-if (!isset($ACTIVE_ONLINE_LANGUAGES[$_GET["lang"]])) {
+if (!isset(Languages::ACTIVE_ONLINE_LANGUAGES[$lang])) {
     header("Location: http://php.net");
 }
-$lang = $_GET["lang"];
 
 /*
 $types = array(
@@ -45,27 +43,24 @@ header("Last-Modified: " . $tsstring);
 header("Content-Type: application/javascript");
 /* }}} */
 
-
-
 $s = file_get_contents($indexfile);
 $js = json_decode($s, true);
 
-$index = array();
-foreach($js as $item) {
+$index = [];
+foreach ($js as $item) {
     if ($item[0]) {
         /* key: ID/filename, 0=>*/
-        $index[$item[1]] = array($item[0], "", $item[2]);
+        $index[$item[1]] = [$item[0], "", $item[2]];
     }
 }
 
 $s = file_get_contents($descfile);
 $js = json_decode($s, true);
 
-foreach($js as $k => $item) {
+foreach ($js as $k => $item) {
     if ($item && isset($index[$k])) {
         $index[$k][1] = $item;
     }
 }
-
 
 echo json_encode($index);

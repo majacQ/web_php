@@ -3,46 +3,43 @@ $_SERVER['BASE_PAGE'] = 'manual/vote-note.php';
 include_once __DIR__ . '/../include/prepend.inc';
 include_once __DIR__ . '/../include/posttohost.inc';
 include_once __DIR__ . '/../include/shared-manual.inc';
-include      __DIR__ . '/spam_challenge.php';
+include_once __DIR__ . '/spam_challenge.php';
 
 // Initialize global variables
 $error = false;
 $thankyou = false;
 $headerset = false;
-$BACKpage = htmlspecialchars(isset($_REQUEST['page']) ? $_REQUEST['page'] : '');
-$BACKid = htmlspecialchars(isset($_REQUEST['id']) ? $_REQUEST['id'] : '');
+$BACKpage = htmlspecialchars($_REQUEST['page'] ?? '');
+$BACKid = htmlspecialchars($_REQUEST['id'] ?? '');
 $link = "/{$BACKpage}#{$BACKid}";
 $master_url = "https://main.php.net/entry/user-notes-vote.php";
 
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (isset($_SERVER['HTTP_X_JSON']) && $_SERVER['HTTP_X_JSON'] == 'On' && !empty($_REQUEST['id']) && !empty($_REQUEST['page']) && ($N = manual_notes_load($_REQUEST['page'])) && array_key_exists($_REQUEST['id'], $N) && !empty($_REQUEST['vote']) && ($_REQUEST['vote'] === 'up' || $_REQUEST['vote'] === 'down')) {
-    $response = array();
-    $update = $N[$_REQUEST['id']]['votes']['up'] - $N[$_REQUEST['id']]['votes']['down'];
+    $response = [];
     $hash = substr(md5($_REQUEST['page']), 0, 16);
-    $notes_file = $_SERVER['DOCUMENT_ROOT'] . "/backend/notes/" .
-        substr($hash, 0, 2) . "/$hash";
+    $notes_file = $_SERVER['DOCUMENT_ROOT'] . "/backend/notes/" . substr($hash, 0, 2) . "/$hash";
     if (!file_exists($notes_file)) {
       $response["success"] = false;
       $response["msg"] = "Invalid request.";
     }
     else {
-      $data = array(
+      $data = [
           "noteid" => $_REQUEST['id'],
           "sect" => $_REQUEST['page'],
           "vote" => $_REQUEST['vote'],
-          "ip" => $_SERVER['REMOTE_ADDR']
-      );
+          "ip" => $_SERVER['REMOTE_ADDR'],
+      ];
       if (($r = posttohost($master_url, $data)) === null || strpos($r,"failed to open socket to") !== false) {
         $response["success"] = false;
         $response["msg"] = "Could not process your request at this time. Please try again later...";
       }
       else {
         $r = json_decode($r);
-        if (json_last_error() == JSON_ERROR_NONE && isset($r->status) && $r->status && isset($r->votes)) {
+        if (isset($r->status, $r->votes) && $r->status) {
           $response["success"] = true;
           $response["update"] = (int)$r->votes;
-        } elseif (json_last_error() == JSON_ERROR_NONE && isset($r->status) && isset($r->message) && $r->status == false) {
+        } elseif (isset($r->status, $r->message) && !$r->status) {
           $response["success"] = false;
           $response["msg"] = $r->message;
         } else {
@@ -54,32 +51,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo json_encode($response);
     exit;
   }
-  elseif (!empty($_REQUEST['id']) && !empty($_REQUEST['page']) && ($N = manual_notes_load($_REQUEST['page'])) && array_key_exists($_REQUEST['id'], $N) && !empty($_REQUEST['vote']) && ($_REQUEST['vote'] === 'up' || $_REQUEST['vote'] === 'down')) {
+  if (!empty($_REQUEST['id']) && !empty($_REQUEST['page']) && ($N = manual_notes_load($_REQUEST['page'])) && array_key_exists($_REQUEST['id'], $N) && !empty($_REQUEST['vote']) && ($_REQUEST['vote'] === 'up' || $_REQUEST['vote'] === 'down')) {
     if (!empty($_POST['challenge']) && !empty($_POST['func']) || empty($_POST['arga']) || empty($_POST['argb'])) {
       if (!test_answer($_POST['func'], $_POST['arga'], $_POST['argb'], $_POST['challenge'])) {
         $error = "Incorrect answer! Please try again.";
       }
       else {
-        if ($_REQUEST['vote'] == 'up') {
-          $N[$_REQUEST['id']]['votes']['up']++;
+        if ($_REQUEST['vote'] === 'up') {
+          $N[$_REQUEST['id']]->upvotes++;
         }
-        elseif ($_REQUEST['vote'] == 'down') {
-          $N[$_REQUEST['id']]['votes']['down']++;
+        elseif ($_REQUEST['vote'] === 'down') {
+          $N[$_REQUEST['id']]->downvotes++;
         }
-        $update = $N[$_REQUEST['id']]['votes']['up'] - $N[$_REQUEST['id']]['votes']['down'];
         $hash = substr(md5($_REQUEST['page']), 0, 16);
-        $notes_file = $_SERVER['DOCUMENT_ROOT'] . "/backend/notes/" .
-            substr($hash, 0, 2) . "/$hash";
+        $notes_file = $_SERVER['DOCUMENT_ROOT'] . "/backend/notes/" . substr($hash, 0, 2) . "/$hash";
         if (file_exists($notes_file)) {
-          $data = array(
+          $data = [
               "noteid" => $_REQUEST['id'],
               "sect" => $_REQUEST['page'],
               "vote" => $_REQUEST['vote'],
               "ip" => $_SERVER['REMOTE_ADDR'],
-          );
+          ];
           if (($r = posttohost($master_url, $data)) !== null && strpos($r,"failed to open socket to") === false) {
             $r = json_decode($r);
-            if (json_last_error() == JSON_ERROR_NONE && isset($r->status) && $r->status && isset($r->votes)) {
+            if (isset($r->status, $r->votes) && $r->status) {
               $thankyou = true;
             } else {
               $error = "Invalid request.";
@@ -114,8 +109,8 @@ else {
   <div style="background-color: #f5f5ff; border: 1px solid black; padding: 15px; width: 90%; margin: auto;">
    <form action="" method="post">
     <div>
-    <p>Please answer this simple SPAM challenge: <strong><?php $c = gen_challenge(); echo $c[3]; ?></strong>?<br>
-    <input type="text" name="challenge" maxlength="10"> (Example: nine)</p>
+    <p><label for="form-challenge">Please answer this simple SPAM challenge</label>: <strong><?php $c = gen_challenge(); echo $c[3]; ?></strong>?<br>
+    <input id="form-challenge" type="text" name="challenge" maxlength="10" required> (Example: nine)</p>
     <p><input type="submit" value="Vote" name="votenote"></p>
     </div>
     <input type="hidden" name="func" value="<?php echo $c[0]; ?>">
@@ -129,10 +124,7 @@ else {
 <?php
   $backID = htmlspecialchars($_REQUEST['id']);
   $backPAGE = htmlspecialchars($_REQUEST['page']);
-  manual_note_display(
-      $N[$_REQUEST['id']]['xwhen'], $N[$_REQUEST['id']]['user'], $N[$_REQUEST['id']]['note'], $N[$_REQUEST['id']]['id'],
-      $N[$_REQUEST['id']]['votes'], false
-  );
+  manual_note_display($N[$_REQUEST['id']], false);
 ?>
  </div>
  <div style="width: 90%; margin: auto;"><p><a href="<?php echo "/{$backPAGE}#{$backID}"; ?>">&lt;&lt; Back to user notes page</a></p></div>
@@ -166,8 +158,8 @@ if (!$headerset) {
   <div style="background-color: #f5f5ff; border: 1px solid black; padding: 15px; width: 90%; margin: auto;">
    <form action="" method="post">
     <div>
-    <p>Please answer this simple SPAM challenge: <strong><?php $c = gen_challenge(); echo $c[3]; ?></strong>?<br>
-    <input type="text" name="challenge" maxlength="10"> (Example: nine)</p>
+    <p><label for="form-challenge">Please answer this simple SPAM challenge</label>: <strong><?php $c = gen_challenge(); echo $c[3]; ?></strong>?<br>
+    <input id="form-challenge" type="text" name="challenge" maxlength="10" required> (Example: nine)</p>
     <p><input type="submit" value="Vote" name="votenote"></p>
     </div>
     <input type="hidden" name="func" value="<?php echo $c[0]; ?>">
@@ -185,10 +177,7 @@ if (!$headerset) {
 <?php
   $backID = htmlspecialchars($_REQUEST['id']);
   $backPAGE = htmlspecialchars($_REQUEST['page']);
-  manual_note_display(
-      $N[$_REQUEST['id']]['xwhen'], $N[$_REQUEST['id']]['user'], $N[$_REQUEST['id']]['note'], $N[$_REQUEST['id']]['id'],
-      $N[$_REQUEST['id']]['votes'], false
-  );
+  manual_note_display($N[$_REQUEST['id']], false);
 ?>
  </div>
  <div style="width: 90%; margin: auto;"><p><a href="<?php echo "/{$backPAGE}#{$backID}"; ?>">&lt;&lt; Back to user notes page</a></p></div>

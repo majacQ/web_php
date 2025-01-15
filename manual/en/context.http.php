@@ -42,7 +42,6 @@ $setup["toc"] = $TOC;
 $setup["parents"] = $PARENTS;
 manual_setup($setup);
 
-manual_header();
 ?>
 <div id="context.http" class="refentry">
  <div class="refnamediv">
@@ -439,4 +438,4 @@ array (
  </div>
 
 
-</div><?php manual_footer(); ?>
+</div><?php manual_footer([]); ?>

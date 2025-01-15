@@ -4,13 +4,13 @@ $_SERVER['BASE_PAGE'] = 'supported-versions.php';
 include_once __DIR__ . '/include/prepend.inc';
 include_once __DIR__ . '/include/branches.inc';
 
-site_header('Supported Versions', array('css' => array('supported-versions.css')));
+site_header('Supported Versions', ['css' => ['supported-versions.css']]);
 
 // Version notes: if you need to make a note about a version having an unusual
 // support lifetime, add it under a heading with an anchor, and add the anchor
 // and branch names to the array below ('x.y' => '#anchor-name').
-$VERSION_NOTES = array(
-);
+$VERSION_NOTES = [
+];
 ?>
 
 <h1>Supported Versions</h1>
@@ -23,13 +23,13 @@ $VERSION_NOTES = array(
 
 <p>
 	After this two year period of active support, each branch is then supported
-	for an additional year for critical security issues only. Releases during
+	for two additional years for critical security issues only. Releases during
 	this period are made on an as-needed basis: there may be multiple point
 	releases, or none, depending on the number of reports.
 </p>
 
 <p>
-	Once the three years of support are completed, the branch reaches its end of
+	Once the four years of support are completed, the branch reaches its end of
 	life and is no longer supported. <a href="/eol.php">A table of end of life
 	branches is available.</a>
 </p>
@@ -50,11 +50,12 @@ $VERSION_NOTES = array(
 			<?php ksort($releases) ?>
 			<?php foreach ($releases as $branch => $release): ?>
 				<?php
-				$state = get_branch_support_state($branch);
-				$initial = get_branch_release_date($branch);
-				$until = get_branch_bug_eol_date($branch);
-				$eol = get_branch_security_eol_date($branch);
-				?>
+                $state = get_branch_support_state($branch);
+                $initial = get_branch_release_date($branch);
+                $until = get_branch_bug_eol_date($branch);
+                $eol = get_branch_security_eol_date($branch);
+                $now = new DateTime('now');
+                ?>
 				<tr class="<?php echo $state ?>">
 					<td>
 						<a href="/downloads.php#v<?php echo htmlspecialchars($release['version']) ?>"><?php echo htmlspecialchars($branch) ?></a>
@@ -63,11 +64,11 @@ $VERSION_NOTES = array(
 						<?php endif ?>
 					</td>
 					<td><?php echo htmlspecialchars($initial->format('j M Y')) ?></td>
-					<td class="collapse-phone"><em><?php echo htmlspecialchars(format_interval($initial, null)) ?></em></td>
+					<td class="collapse-phone"><em><?php echo htmlspecialchars(format_interval($initial, $now)) ?></em></td>
 					<td><?php echo htmlspecialchars($until->format('j M Y')) ?></td>
-					<td class="collapse-phone"><em><?php echo htmlspecialchars(format_interval($until, null)) ?></em></td>
+					<td class="collapse-phone"><em><?php echo htmlspecialchars(format_interval($until, $now)) ?></em></td>
 					<td><?php echo htmlspecialchars($eol->format('j M Y')) ?></td>
-					<td class="collapse-phone"><em><?php echo htmlspecialchars(format_interval($eol, null)) ?></em></td>
+					<td class="collapse-phone"><em><?php echo htmlspecialchars(format_interval($eol, $now)) ?></em></td>
 				</tr>
 			<?php endforeach ?>
 		<?php endforeach ?>
