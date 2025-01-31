@@ -2,18 +2,18 @@
 $_SERVER['BASE_PAGE'] = 'urlhowto.php';
 include_once __DIR__ . '/include/prepend.inc';
 
-$SIDEBAR_DATA='
+$SIDEBAR_DATA = '
 <h3>URL examples</h3>
 <p>
  We have many kind of URL shortcuts. Here are some
  examples you can try out:
 </p>
 <ul class="simple">
- <li><a href="'.$MYSITE.'echo">/echo</a></li>
- <li><a href="'.$MYSITE.'it/echo">/it/echo</a></li>
- <li><a href="'.$MYSITE.'imap">/imap</a></li>
- <li><a href="'.$MYSITE.'downloads">/downloads</a></li>
- <li><a href="'.$MYSITE.'searchterm">/searchterm</a></li>
+ <li><a href="' . $MYSITE . 'echo">/echo</a></li>
+ <li><a href="' . $MYSITE . 'it/echo">/it/echo</a></li>
+ <li><a href="' . $MYSITE . 'imap">/imap</a></li>
+ <li><a href="' . $MYSITE . 'downloads">/downloads</a></li>
+ <li><a href="' . $MYSITE . 'searchterm">/searchterm</a></li>
 </ul>
 
 <h3>My PHP.net</h3>
@@ -24,10 +24,10 @@ $SIDEBAR_DATA='
 </p>
 ';
 
-site_header("URL Howto", array("current" => "help"));
-function a($href) {
+site_header("URL Howto", ["current" => "help"]);
+function a($href): void {
     global $MYSITE;
-	echo '<a href="' . $MYSITE . $href . '">' . $MYSITE . $href . '</a>';
+    echo '<a href="' . $MYSITE . $href . '">' . $MYSITE . $href . '</a>';
 }
 
 ?>
@@ -75,7 +75,7 @@ function a($href) {
  <li>Reference pages (e.g. <?php a("imap") ?>)</li>
  <li>Function pages (e.g. <?php a("join") ?>)</li>
  <li>Class pages (e.g. <?php a("dir") ?>)</li>
- <li>Feature pages (e.g. <?php a("safe_mode") ?>)</li>
+ <li>Feature pages (e.g. <?php a("commandline") ?>)</li>
  <li>Control structure pages (e.g. <?php a("while") ?>)</li>
  <li>Other language pages (e.g. <?php a("oop") ?>)</li>
 </ul>
@@ -132,8 +132,8 @@ function a($href) {
  always override this setting by explicitly providing
  the language you want to get to. You can embed the language
  in the URL before the manual search term.
- <kbd><?php echo $MYSITE; ?>hu/sort</kbd> will bring up
- the Hungarian manual page for sort() for example.
+ <kbd><?php echo $MYSITE; ?>fr/sort</kbd> will bring up
+ the French manual page for sort() for example.
 </p>
 
 <h2>Search shortcuts</h2>

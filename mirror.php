@@ -1,4 +1,7 @@
 <?php
+
+use phpweb\I18n\Languages;
+
 $_SERVER['BASE_PAGE'] = 'mirror.php';
 include_once __DIR__ . '/include/prepend.inc';
 $SIDEBAR_DATA = '
@@ -22,7 +25,7 @@ $MIRROR_IMAGE = '';
 if (is_official_mirror()) {
 
     // Iterate through possible mirror provider logo types in priority order
-    $types = array("gif", "jpg", "png");
+    $types = ["gif", "jpg", "png"];
     foreach ($types as $ext) {
         // Check if file exists for this type
         if (file_exists("backend/mirror." . $ext)) {
@@ -31,10 +34,9 @@ if (is_official_mirror()) {
             $MIRROR_IMAGE = make_image(
                 'mirror.' . $ext,
                 htmlspecialchars(mirror_provider()),
-                FALSE,
-                FALSE,
+                false,
+                false,
                 'backend',
-                0
             );
 
             // Add size information depending on mirror type
@@ -49,7 +51,7 @@ if (is_official_mirror()) {
         }
     }
 }
-site_header("Information About This PHP Mirror Site", array("current" => "community"));
+site_header("Information About This PHP Mirror Site", ["current" => "community"]);
 ?>
 
 <h1>Information About This PHP Mirror Site</h1>
@@ -67,14 +69,14 @@ site_header("Information About This PHP Mirror Site", array("current" => "commun
 
 <ul>
  <li>This site is <?php echo is_official_mirror() ? "" : "not"; ?> an official PHP.net mirror site</li>
- <li>The mirror site's address is <?php print_link($MYSITE); ?></li>
+ <li>The mirror site's address is <?= make_link($MYSITE)?></li>
 </ul>
 
 <?php if (is_official_mirror()) { ?>
 <h2>Mirror Provider</h2>
 <ul>
  <li>
-  <p>The provider of this mirror is <?php print_link(mirror_provider_url(), mirror_provider()); ?></p>
+  <p>The provider of this mirror is <?= make_link(mirror_provider_url(), mirror_provider())?></p>
   <?php if ($MIRROR_IMAGE) { ?>
   <p><?php echo $MIRROR_IMAGE; ?></p>
   <?php } ?>
@@ -85,7 +87,7 @@ site_header("Information About This PHP Mirror Site", array("current" => "commun
 <h2>Mirror Services</h2>
 
 <ul>
- <li>Default language is <?php echo $LANGUAGES[default_language()]; ?></li>
+ <li>Default language is <?php echo Languages::LANGUAGES[default_language()]; ?></li>
 </ul>
 
 <h2>Mirror Status</h2>

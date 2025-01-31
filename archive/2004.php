@@ -2,7 +2,7 @@
 $_SERVER['BASE_PAGE'] = 'archive/2004.php';
 include_once __DIR__ . '/../include/prepend.inc';
 news_archive_sidebar();
-site_header("News Archive - 2004", array("cache" => true));
+site_header("News Archive - 2004", ["cache" => true]);
 ?>
 
 <h1>News Archive - 2004</h1>
@@ -349,7 +349,6 @@ site_header("News Archive - 2004", array("cache" => true));
 
 <hr>
 
-<?php //news_image("http://www.phpconference.de/2003/index_en.php", "international_conference_2003.gif", "International PHP Conference"); ?>
 <h1>International PHP Conference 2004</h1>
 <p>
  <span class="newsdate">[18-Jun-2004]</span>
@@ -654,4 +653,4 @@ site_header("News Archive - 2004", array("cache" => true));
  one of a kind conference!
 </p>
 
-<?php site_footer(array('elephpants' => true, 'sidebar' => $SIDEBAR_DATA));
+<?php site_footer(['elephpants' => true, 'sidebar' => $SIDEBAR_DATA]);

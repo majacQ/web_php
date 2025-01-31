@@ -2,7 +2,7 @@
 $_SERVER['BASE_PAGE'] = 'get-involved.php';
 include_once __DIR__ . '/include/prepend.inc';
 
-site_header("Get Involved", array("current" => "community"));
+site_header("Get Involved", ["current" => "community"]);
 ?>
 
 <h2 class="content-title" id="contributing-to-php">Contributing to PHP</h2>
@@ -26,15 +26,15 @@ site_header("Get Involved", array("current" => "community"));
 <h3 class="content-title" id="ways-to-contribute">Four Best Ways to Contribute</h3>
 
  <ol class="content-box listed">
-  <li>Running test suites in <a href="http://qa.php.net/">RC</a>
-      and <a href="http://php.net/releases">release</a> distributions of PHP</li>
+  <li>Running test suites in <a href="https://qa.php.net/">RC</a>
+      and <a href="https://php.net/releases">release</a> distributions of PHP</li>
   <li>Help finding and diagnosing failed tests, see
-      the <a href="http://qa.php.net/write-test.php">phpt documentation</a></li>
+      the <a href="https://qa.php.net/write-test.php">phpt documentation</a></li>
   <li>Filing and resolving bug reports
-      at <a href="http://bugs.php.net">bugs.php.net</a></li>
+      on <a href="https://github.com/php/php-src/issues/">GitHub Issues</a>.</li>
   <li>Help maintain and or translate documentation files
       at the doc-* repositories on <a href="https://github.com/php/?q=doc">github</a>. Check out our
-      <a href="http://doc.php.net/tutorial/">guide for contributors</a>.</li>
+      <a href="https://doc.php.net/guide/">guide for contributors</a>.</li>
  </ol>
 
 <h3 class="content-header" id="php-src">Development of the PHP source</h3>
@@ -66,7 +66,7 @@ site_header("Get Involved", array("current" => "community"));
 
 <?php
 
-$SIDEBAR_DATA ='
+$SIDEBAR_DATA = '
 <div class="panel">
   <div class="headline">Table of Contents</div>
   <div class="body">
@@ -80,6 +80,4 @@ $SIDEBAR_DATA ='
 </div>
 ';
 
-site_footer(array('sidebar'=>$SIDEBAR_DATA));
-
-/* vim: set et ts=4 sw=4 ft=php: : */
+site_footer(['sidebar' => $SIDEBAR_DATA]);

@@ -9,7 +9,7 @@ $SIDEBAR_DATA = '
  <a href="/license/">see our licensing information page</a>.
 </p>
 ';
-site_header("ElePHPant", array("current" => "footer"));
+site_header("ElePHPant", ["current" => "footer"]);
 ?>
 
 <a id="copyright"></a>
@@ -35,8 +35,6 @@ site_header("ElePHPant", array("current" => "footer"));
 
 <?php
 // Print the common footer.
-site_footer(
-    array(
-        'elephpants' => true
-    )
-);
+site_footer([
+    'elephpants' => true,
+]);

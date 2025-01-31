@@ -1,405 +1,481 @@
 /**
- * A jQuery plugin to add typeahead search functionality to the navbar search
- * box.  This requires Hogan for templating and typeahead.js for the actual
- * typeahead functionality.
+ * Initialize the PHP search functionality with a given language.
+ * Loads the search index, sets up FuzzySearch, and returns a search function.
+ *
+ * @param {string} language The language for which the search index should be
+ * loaded.
+ * @returns {Promise<(query: string) => Array>} A function that takes a query
+ * and performs a search using the loaded index.
  */
-(function ($) {
-    /**
-     * A backend, which encapsulates a set of completions, such as a list of
-     * functions or classes.
-     *
-     * @constructor
-     * @param {String} label The label to show the user.
-     */
-    var Backend = function (label) {
-        this.label = label;
-        this.elements = {};
-    };
+const initPHPSearch = async (language) => {
+    const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+    const CACHE_DAYS = 14;
 
     /**
-     * Adds an item to the backend.
+     * Converts the structure from search-index.php into an array of objects,
+     * mapping the index entries to their respective types.
      *
-     * @param {String} id     The item ID. It would help if this was unique.
-     * @param {String} name   The item name to use as a label.
-     * @param {Array}  tokens An array of tokens that should match this item.
+     * @param {object} index
+     * @returns {Array}
      */
-    Backend.prototype.addItem = function (id, name, description, tokens) {
-        this.elements[id] = {
-            tokens: tokens,
-            id: id,
-            name: name,
-            description: description
-        };
-    };
+    const processIndex = (index) => {
+        return Object.entries(index)
+            .map(([id, [name, description, tag]]) => {
+                if (!name) return null;
 
-    /**
-     * Returns the backend contents formatted as an array that typeahead.js can
-     * digest as a local data source.
-     *
-     * @return {Array}
-     */
-    Backend.prototype.toTypeaheadArray = function () {
-        var array = [];
+                let type = "General";
+                switch (tag) {
+                    case "phpdoc:varentry":
+                        type = "Variable";
+                        break;
 
-        $.each(this.elements, function (_, element) {
-            array.push(element);
-        });
+                    case "refentry":
+                        type = "Function";
+                        break;
 
-        /* This is a rather convoluted sorting function, but the idea is to
-         * make the results as useful as possible, since only a few are shown
-         * at any one time. In general, we favour shorter names over longer
-         * ones, and favour regular functions over methods when sorting
-         * functions. Ideally, this would actually sort based on function
-         * popularity, but this is a simpler algorithmic approach for now that
-         * seems to result in generally useful results. */
-        array.sort(function (a, b) {
-            var a = a.name;
-            var b = b.name;
+                    case "phpdoc:exceptionref":
+                        type = "Exception";
+                        break;
 
-            var aIsMethod = (a.indexOf("::") != -1);
-            var bIsMethod = (b.indexOf("::") != -1);
+                    case "phpdoc:classref":
+                        type = "Class";
+                        break;
 
-            // Methods are always after regular functions.
-            if (aIsMethod && !bIsMethod) {
-                return 1;
-            } else if (bIsMethod && !aIsMethod) {
-                return -1;
-            }
-
-            /* If one function name is the exact prefix of the other, we want
-             * to sort the shorter version first (mostly for things like date()
-             * versus date_format()). */
-            if (a.length > b.length) {
-                if (a.indexOf(b) == 0) {
-                    return 1;
+                    case "set":
+                    case "book":
+                    case "reference":
+                        type = "Extension";
+                        break;
                 }
-            } else {
-                if (b.indexOf(a) == 0) {
-                    return -1;
-                }
-            }
-
-            // Otherwise, sort normally.
-            if (a > b) {
-                return 1;
-            } else if (a < b) {
-                return -1;
-            }
-
-            return 0;
-        });
-        return array;
-    };
-
-    /**
-     * The actual search plugin. Should be applied to the input that needs
-     * typeahead functionality.
-     *
-     * @param {Object} options The options object. This should include
-     *                         "language": the language to try to load,
-     *                         "limit": the maximum number of results
-     */
-    $.fn.search = function (options) {
-        var element = this;
-
-        options.language = options.language || "en";
-        options.limit = options.limit || 30;
-
-        /**
-         * Utility function to check if the user's browser supports local
-         * storage and native JSON, in which case we'll use it to cache the
-         * search JSON.
-         *
-         * @return {Boolean}
-         */
-        var canCache = function () {
-            try {
-                return ('localStorage' in window && window['localStorage'] !== null && "JSON" in window && window["JSON"] !== null);
-            } catch (e) {
-                return false;
-            }
-        };
-
-        /**
-         * Processes a data structure in the format of our search-index.php
-         * files and returns an object containing multiple Backend objects.
-         *
-         * @param {Object} index
-         * @return {Object}
-         */
-        var processIndex = function (index) {
-            // The search types we want to support.
-            var backends = {
-                "function": new Backend("Functions"),
-                "variable": new Backend("Variables"),
-                "class": new Backend("Classes"),
-                "exception": new Backend("Exceptions"),
-                "extension": new Backend("Extensions"),
-                "general": new Backend("Other Matches")
-            };
-
-            $.each(index, function (id, item) {
-                /* If the item has a name, then we should figure out what type
-                 * of data this is, and hence which backend this should go
-                 * into. */
-                if (item[0]) {
-                    var tokens = [item[0]];
-                    var type = null;
-
-                    if (item[0].indexOf("_") != -1) {
-                        tokens.push(item[0].replace("_", ""));
-                    }
-                    if (item[0].indexOf("::") != -1) {
-                        /* We'll add tokens to make the autocompletion more
-                         * useful: users can search for method names and can
-                         * specify that they only want method names by
-                         * prefixing their search with ::. */
-                        tokens.push(item[0].split("::")[1]);
-                        tokens.push("::" + item[0].split("::")[1]);
-                    }
-
-                    switch(item[2]) {
-                        case "phpdoc:varentry":
-                            type = "variable";
-                            break;
-
-                        case "refentry":
-                            type = "function";
-                            break;
-
-                        case "phpdoc:exceptionref":
-                             type = "exception";
-                             break;
-
-                        case "phpdoc:classref":
-                             type = "class";
-                             break;
-
-                        case "set":
-                        case "book":
-                        case "reference":
-                             type = "extension";
-                             break;
-
-                        case "section":
-                        case "chapter":
-                        case "appendix":
-                        case "article":
-                        default:
-                             type = "general";
-                    }
-
-                    if (type) {
-                        backends[type].addItem(id, item[0], item[1], tokens);
-                    }
-                }
-            });
-
-            return backends;
-        };
-
-        /**
-         * Attempt to asynchronously load the search JSON for a given language.
-         *
-         * @param {String}   language The language to search for.
-         * @param {Function} success  Success handler, which will be given an
-         *                            object containing multiple Backend
-         *                            objects on success.
-         * @param {Function} failure  An optional failure handler.
-         */
-        var loadLanguage = function (language, success, failure) {
-            var key = "search-" + language;
-
-            // Check if the cache has a recent enough search index.
-            if (canCache()) {
-                var cache = window.localStorage.getItem(key);
-
-                if (cache) {
-                    var since = new Date();
-
-                    // Parse the stored JSON.
-                    cache = JSON.parse(cache);
-
-                    // We'll use anything that's less than two weeks old.
-                    since.setDate(since.getDate() - 14);
-                    if (cache.time > since.getTime()) {
-                        success($.map(cache.data, function (dataset, name) {
-                            // Rehydrate the Backend objects.
-                            var backend = new Backend(dataset.label);
-                            backend.elements = dataset.elements;
-
-                            return backend;
-                        }));
-                        return;
-                    }
-                }
-            }
-
-            // OK, nothing cached.
-            $.ajax({
-                dataType: "json",
-                error: failure,
-                success: function (data) {
-                    // Transform the data into something useful.
-                    var backends = processIndex(data);
-                    // Cache the data if we can.
-                    if (canCache()) {
-                        /* This may fail in IE 8 due to exceeding the local
-                         * storage limit. If so, squash the exception: this
-                         * isn't a required part of the system. */
-                        try {
-                            window.localStorage.setItem(key,
-                                JSON.stringify({
-                                    data: backends,
-                                    time: new Date().getTime()
-                                })
-                            );
-                        } catch (e) {
-                            // Derp.
-                        }
-                    }
-                    success(backends);
-                },
-                url: "/js/search-index.php?lang=" + language
-            });
-        };
-
-        /**
-         * Actually enables the typeahead on the DOM element.
-         *
-         * @param {Object} backends An array-like object containing backends.
-         */
-        var enableSearchTypeahead = function (backends) {
-            var template = "<h4>{{ name }}</h4>" +
-                           "<span title='{{ description }}' class='description'>{{ description }}</span>";
-
-            // Build the typeahead options array.
-            var typeaheadOptions = $.map(backends, function (backend, name) {
-                var local = backend instanceof Backend ? backend.toTypeaheadArray() : backend;
 
                 return {
-                    name: name,
-                    local: backend.toTypeaheadArray(),
-                    header: '<h3 class="result-heading"><span class="collapsible"></span>' + backend.label + '</h3>',
-                    limit: options.limit,
-                    valueKey: "name",
-                    engine: Hogan,
-                    template: template
+                    id,
+                    name,
+                    description,
+                    tag,
+                    type,
+                    methodName: name.split("::").pop(),
                 };
-            });
+            })
+            .filter(Boolean);
+    };
 
-            /* Construct a global that we can use to track the total number of
-             * results from each backend. */
-            var results = {};
+    /**
+     * Looks up the search index cached in localStorage.
+     *
+     * @returns {Array|null}
+     */
+    const lookupIndexCache = () => {
+        const key = `search-${language}`;
+        const cache = window.localStorage.getItem(key);
 
-            // Set up the typeahead and the various listeners we need.
-            var searchTypeahead = $(element).typeahead(typeaheadOptions);
+        if (!cache) {
+            return null;
+        }
 
-            // Delegate click events to result-heading collapsible icons, and trigger the accordion action
-            $('.tt-dropdown-menu').delegate('.result-heading .collapsible', 'click', function() {
-                var el = $(this), suggestions = el.parent().parent().find('.tt-suggestions');
-                suggestions.stop();
-                if(!el.hasClass('closed')) {
-                    suggestions.slideUp();
-                    el.addClass('closed');
-                } else {
-                    suggestions.slideDown();
-                    el.removeClass('closed');
+        const { data, time: cachedDate } = JSON.parse(cache);
+
+        // Invalidate old search cache format (previously an object)
+        // TODO: Remove this check once the new search index (a single array)
+        // has been in use for a while.
+        if (!Array.isArray(data)) {
+            console.log("Invalidating old search cache format");
+            return null;
+        }
+
+        const expireDate = cachedDate + CACHE_DAYS * MILLISECONDS_PER_DAY;
+
+        if (Date.now() > expireDate) {
+            return null;
+        }
+
+        return data;
+    };
+
+    /**
+     * Fetch the search index.
+     *
+     * @returns {Promise<Array>} The search index.
+     */
+    const fetchIndex = async () => {
+        const key = `search-${language}`;
+        const response = await fetch(`/js/search-index.php?lang=${language}`);
+        const data = await response.json();
+        const items = processIndex(data);
+
+        try {
+            localStorage.setItem(
+                key,
+                JSON.stringify({
+                    data: items,
+                    time: Date.now(),
+                }),
+            );
+        } catch (e) {
+            // Local storage might be full, or other error.
+            // Just continue without caching.
+            console.error("Failed to cache search index", e);
+        }
+
+        return items;
+    };
+
+    /**
+     * Loads the search index, using cache if available.
+     *
+     * @returns {Promise<Array>}
+     */
+    const loadIndex = async () => {
+        const cached = lookupIndexCache();
+        return cached || fetchIndex();
+    };
+
+    /**
+     * Load the language index, falling back to English on error.
+     *
+     * @returns {Promise<Array>}
+     */
+    const loadIndexWithFallback = async () => {
+        try {
+            return await loadIndex();
+        } catch (error) {
+            if (language !== "en") {
+                language = "en";
+                return loadIndexWithFallback();
+            }
+            throw error;
+        }
+    };
+
+    /**
+     * Perform a search using the given query and a FuzzySearch instance.
+     *
+     * @param {string} query The search query.
+     * @param {object} fuzzyhound The FuzzySearch instance to use for searching.
+     * @returns {Array} An array of search results.
+     */
+    const search = (query, fuzzyhound) => {
+        return fuzzyhound
+            .search(query)
+            .map((result) => {
+                // Boost Language Reference matches.
+                if (result.item.id.startsWith("language")) {
+                    result.score += 10;
                 }
+                return result;
+            })
+            .sort((a, b) => b.score - a.score);
+    };
 
+    const searchIndex = await loadIndexWithFallback();
+    if (!searchIndex) {
+        throw new Error("Failed to load search index");
+    }
+
+    fuzzyhound = new FuzzySearch({
+        source: searchIndex,
+        token_sep: " \t.,-_",
+        score_test_fused: true,
+        keys: ["name", "methodName", "description"],
+        thresh_include: 5.0,
+        thresh_relative_to_best: 0.7,
+        bonus_match_start: 0.7,
+        bonus_token_order: 1.0,
+        bonus_position_decay: 0.3,
+        token_query_min_length: 1,
+        token_field_min_length: 2,
+        output_map: "root",
+    });
+
+    return (query) => search(query, fuzzyhound);
+};
+
+/**
+ * Initialize the search modal, handling focus trap and modal transitions.
+ */
+const initSearchModal = () => {
+    const backdropElement = document.getElementById("search-modal__backdrop");
+    const modalElement = document.getElementById("search-modal");
+    const resultsElement = document.getElementById("search-modal__results");
+    const inputElement = document.getElementById("search-modal__input");
+
+    const focusTrapHandler = (event) => {
+        if (event.key != "Tab") {
+            return;
+        }
+
+        const selectable = modalElement.querySelectorAll("input, button, a");
+        const lastElement = selectable[selectable.length - 1];
+
+        if (event.shiftKey) {
+            if (document.activeElement === inputElement) {
+                event.preventDefault();
+                lastElement.focus();
+            }
+        } else if (document.activeElement === lastElement) {
+            event.preventDefault();
+            inputElement.focus();
+        }
+    };
+
+    const onModalTransitionEnd = (handler) => {
+        backdropElement.addEventListener("transitionend", handler, {
+            once: true,
+        });
+    };
+
+    const documentWidth = document.documentElement.clientWidth;
+    const scrollbarWidth = Math.abs(window.innerWidth - documentWidth);
+
+    const show = function () {
+        if (
+            backdropElement.classList.contains("show") ||
+            backdropElement.classList.contains("showing")
+        ) {
+            return;
+        }
+
+        document.body.style.overflow = "hidden";
+        document.documentElement.style.overflow = "hidden";
+        resultsElement.innerHTML = "";
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+
+        backdropElement.setAttribute("aria-modal", "true");
+        backdropElement.setAttribute("role", "dialog");
+        backdropElement.classList.add("showing");
+        inputElement.focus();
+        inputElement.value = "";
+        document.addEventListener("keydown", focusTrapHandler);
+
+        onModalTransitionEnd(() => {
+            backdropElement.classList.remove("showing");
+            backdropElement.classList.add("show");
+        });
+    };
+
+    const hide = function () {
+        if (!backdropElement.classList.contains("show")) {
+            return;
+        }
+
+        backdropElement.classList.add("hiding");
+        backdropElement.classList.remove("show");
+        backdropElement.removeAttribute("aria-modal");
+        backdropElement.removeAttribute("role");
+        onModalTransitionEnd(() => {
+            document.body.style.overflow = "auto";
+            document.documentElement.style.overflow = "auto";
+            document.body.style.paddingRight = "0px";
+            backdropElement.classList.remove("hiding");
+            document.removeEventListener("keydown", focusTrapHandler);
+        });
+    };
+
+    const searchLink = document.getElementById("navbar__search-link");
+    const searchButtonMobile = document.getElementById(
+        "navbar__search-button-mobile",
+    );
+    const searchButton = document.getElementById("navbar__search-button");
+
+    // Enhance mobile search
+    searchLink.setAttribute("hidden", "true");
+    searchButtonMobile.removeAttribute("hidden");
+
+    // Enhance desktop search
+    document
+        .querySelector(".navbar__search-form")
+        .setAttribute("hidden", "true");
+    searchButton.removeAttribute("hidden");
+
+    // Open when the search button is clicked
+    [searchButton, searchButtonMobile].forEach((button) =>
+        button.addEventListener("click", show),
+    );
+
+    // Open when / is pressed
+    document.addEventListener("keydown", (event) => {
+        const target = event.target;
+
+        if (
+            target.contentEditable === "true" ||
+            target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA"
+        ) {
+            return;
+        }
+
+        if (event.key === "/") {
+            show();
+            event.preventDefault();
+        }
+    });
+
+    // Close when the close button is clicked
+    document
+        .querySelector(".search-modal__close")
+        .addEventListener("click", hide);
+
+    // Close when the escape key is pressed
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            hide();
+        }
+    });
+
+    // Close when the user clicks outside of it
+    backdropElement.addEventListener("click", (event) => {
+        if (event.target === backdropElement) {
+            hide();
+        }
+    });
+};
+
+/**
+ * Initialize the search modal UI, setting up search result rendering and
+ * input handling.
+ *
+ * @param {object} options An object containing the search callback, language,
+ * and result limit.
+ */
+const initSearchUI = ({ searchCallback, language, limit = 30 }) => {
+    const DEBOUNCE_DELAY = 200;
+    // https://pictogrammers.com/library/mdi/icon/code-braces/
+    const BRACES_ICON =
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8,3A2,2 0 0,0 6,5V9A2,2 0 0,1 4,11H3V13H4A2,2 0 0,1 6,15V19A2,2 0 0,0 8,21H10V19H8V14A2,2 0 0,0 6,12A2,2 0 0,0 8,10V5H10V3M16,3A2,2 0 0,1 18,5V9A2,2 0 0,0 20,11H21V13H20A2,2 0 0,0 18,15V19A2,2 0 0,1 16,21H14V19H16V14A2,2 0 0,1 18,12A2,2 0 0,1 16,10V5H14V3H16Z" /></svg>';
+    // https://pictogrammers.com/library/mdi/icon/file-document-outline/
+    const DOCUMENT_ICON =
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6,2A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6M6,4H13V9H18V20H6V4M8,12V14H16V12H8M8,16V18H13V16H8Z" /></svg>';
+
+    const resultsElement = document.getElementById("search-modal__results");
+    const inputElement = document.getElementById("search-modal__input");
+    let selectedIndex = -1;
+
+    /**
+     * Update the selected result in the results container.
+     */
+    const updateSelectedResult = () => {
+        const results = resultsElement.querySelectorAll(
+            ".search-modal__result",
+        );
+        results.forEach((result, index) => {
+            const isSelected = index === selectedIndex;
+            result.setAttribute("aria-selected", isSelected ? "true" : "false");
+            if (!isSelected) {
+                result.classList.remove("selected");
+                return;
+            }
+            result.classList.add("selected");
+            result.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",
             });
+        });
+    };
 
-            // If the user has selected an autocomplete item and hits enter, we should take them straight to the page.
-            searchTypeahead.on("typeahead:selected", function (_, item) {
-                window.location = "/manual/" + options.language + "/" + item.id;
-            });
-
-            searchTypeahead.on("keyup", (function () {
-                /* typeahead.js doesn't give us a reliable event for the
-                 * dropdown entries having been updated, so we'll hook into the
-                 * input element's keyup instead. The aim here is to put in
-                 * fake entries so that the user has a discoverable way to
-                 * perform different searches based on what he or she has
-                 * entered. */
-
-                // Precompile the templates we need for the fake entries.
-                var moreTemplate = Hogan.compile("<a class='more' href='{{ url }}'>&raquo; {{ num }} more result{{ plural }}</a>");
-                var searchTemplate = Hogan.compile("<a class='search' href='{{ url }}'>&raquo; Search php.net for {{ pattern }}</a>");
-
-                /* Now we'll return the actual function that should be invoked
-                 * when the user has typed something into the search box after
-                 * typeahead.js has done its thing. */
-                return function () {
-                    // Add result totals to each section heading.
-                    $.each(results, function (name, numResults) {
-                        var container = $(".tt-dataset-" + name, $(element).parent()),
-                            resultHeading = container.find('.result-heading'),
-                            resultCount = container.find('.result-count');
-
-                        // Does a result count already exist in this resultHeading?
-                        if(resultCount.length == 0) {
-                            var results = $("<span class='result-count'>").text(numResults);
-                            resultHeading.append(results);
-                        } else {
-                            resultCount.text(numResults);
-                        }
-
-
-                    });
-
-                    // Grab what the user entered.
-                    var pattern = $(element).val();
-
-                    /* Add a global search option. Note that, as above, the
-                     * link is only displayed if more than 2 characters have
-                     * been entered: this is due to our search functionality
-                     * requiring at least 3 characters in the pattern. */
-                    $(".tt-dropdown-menu .search", $(element).parent()).remove();
-                    if (pattern.length > 2) {
-                        var dropdown = $(".tt-dropdown-menu", $(element).parent());
-
-                        dropdown.append(searchTemplate.render({
-                            pattern: pattern,
-                            url: "/search.php?pattern=" + escape(pattern)
-                        }));
-
-                        /* If the dropdown is hidden (because there are no
-                         * results), show it anyway. */
-                        dropdown.show();
-                    }
-                };
-            })());
-
-            /* Override the dataset._getLocalSuggestions() method to grab the
-             * number of results each dataset returns when a search occurs. */
-            $.each($(element).data().ttView.datasets, function (_, dataset) {
-                var originalGetLocal = dataset._getLocalSuggestions;
-
-                dataset._getLocalSuggestions = function () {
-                    var suggestions = originalGetLocal.apply(dataset, arguments);
-
-                    results[dataset.name] = suggestions.length;
-                    return suggestions;
-                };
-            });
-
-            /* typeahead.js adds another input element as part of its DOM
-             * manipulation, which breaks the auto-submit functionality we
-             * previously relied upon for enter keypresses in the input box to
-             * work. Adding a hidden submit button re-enables it. */
-            $("<input type='submit' style='visibility: hidden; position: fixed'>").insertAfter(element);
-
-            // Fix for a styling issue on the created input element.
-            $(".tt-hint", $(element).parent()).addClass("search-query");
+    /**
+     * Render the search results.
+     *
+     * @param {Array} results The search results.
+     */
+    const renderResults = (results) => {
+        const escape = (html) => {
+            const div = document.createElement("div");
+            const node = document.createTextNode(html);
+            div.appendChild(node);
+            return div.innerHTML;
         };
 
-        // Look for the user's language, then fall back to English.
-        loadLanguage(options.language, enableSearchTypeahead, function () {
-            loadLanguage("en", enableSearchTypeahead);
+        let resultsHtml = "";
+        results.forEach(({ item }, i) => {
+            const icon = ["General", "Extension"].includes(item.type)
+                ? DOCUMENT_ICON
+                : BRACES_ICON;
+            const link = `/manual/${encodeURIComponent(language)}/${encodeURIComponent(item.id)}.php`;
+
+            const description =
+                item.type !== "General"
+                    ? `${item.type} • ${item.description}`
+                    : item.description;
+
+            resultsHtml += `
+                <a
+                    href="${link}"
+                    class="search-modal__result"
+                    role="option"
+                    aria-labelledby="search-modal__result-name-${i}"
+                    aria-describedby="search-modal__result-description-${i}"
+                    aria-selected="false"
+                >
+                    <div class="search-modal__result-icon">${icon}</div>
+                    <div class="search-modal__result-content">
+                        <div
+                            id="search-modal__result-name-${i}"
+                            class="search-modal__result-name"
+                        >
+                            ${escape(item.name)}
+                        </div>
+                        <div
+                            id="search-modal__result-description-${i}"
+                            class="search-modal__result-description"
+                        >
+                            ${escape(description)}
+                        </div>
+                    </div>
+                </a>
+            `;
         });
 
-        return this;
+        resultsElement.innerHTML = resultsHtml;
     };
-})(jQuery);
 
-// vim: set ts=4 sw=4 et:
+    const debounce = (func, delay) => {
+        let timeoutId;
+        return (...args) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func(...args), delay);
+        };
+    };
+
+    const handleKeyDown = (event) => {
+        const resultsElements = resultsElement.querySelectorAll(
+            ".search-modal__result",
+        );
+
+        switch (event.key) {
+            case "ArrowDown":
+                event.preventDefault();
+                selectedIndex = Math.min(
+                    selectedIndex + 1,
+                    resultsElements.length - 1,
+                );
+                updateSelectedResult();
+                break;
+            case "ArrowUp":
+                event.preventDefault();
+                selectedIndex = Math.max(selectedIndex - 1, -1);
+                updateSelectedResult();
+                break;
+            case "Enter":
+                if (selectedIndex !== -1) {
+                    event.preventDefault();
+                    resultsElements[selectedIndex].click();
+                } else {
+                    window.location.href = `/search.php?lang=${language}&q=${encodeURIComponent(inputElement.value)}`;
+                }
+                break;
+            case "Escape":
+                selectedIndex = -1;
+                break;
+        }
+    };
+
+    const handleInput = (event) => {
+        const results = searchCallback(event.target.value);
+        renderResults(results.slice(0, limit), language, resultsElement);
+        selectedIndex = -1;
+    };
+    const debouncedHandleInput = debounce(handleInput, DEBOUNCE_DELAY);
+
+    inputElement.addEventListener("input", debouncedHandleInput);
+    inputElement.addEventListener("keydown", handleKeyDown);
+};

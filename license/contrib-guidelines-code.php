@@ -1,7 +1,7 @@
 <?php
 $_SERVER['BASE_PAGE'] = 'license/contrib-guidelines-code.php';
 include_once __DIR__ . '/../include/prepend.inc';
-site_header("License Information", array("current" => "help"));
+site_header("License Information", ["current" => "help"]);
 ?>
 <h2>PHP Contributor Guidelines for Code Developers</h2>
 
@@ -38,7 +38,6 @@ site_header("License Information", array("current" => "help"));
 <ul>
   <li><a href="http://pecl.php.net/copyright.php">PECL</a></li>
   <li><a href="http://pear.php.net/copyright.php">PEAR</a></li>
-  <li><a href="http://gtk.php.net/copyright.php">GTK</a></li>
 </ul>
 
 <?php site_footer();
