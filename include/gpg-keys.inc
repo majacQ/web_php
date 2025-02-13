@@ -11,12 +11,35 @@ function gpg_key_get(string $rm): ?string {
                 "      Key fingerprint = 1A4E 8B72 77C4 2E53 DBA9  C7B9 BCAA 30EA 9C0D 5763\n" .
                 "uid                  Anatol Belski <ab@php.net>";
 
-        case 'carusogabriel':
+        case 'bukka':
+            return
+                "pub   ed25519 2021-04-10 [SC]\n" .
+                "      C28D937575603EB4ABB725861C0779DC5C0A9DE4\n" .
+                "uid           [ultimate] Jakub Zelenka <bukka@php.net>\n" .
+                "uid           [ultimate] Jakub Zelenka <jakub.openssl@gmail.com>\n" .
+                "uid           [ultimate] Jakub Zelenka <jakub.zelenka@gmail.com>\n" .
+                "sub   cv25519 2021-04-10 [E]";
+
+        case "calvinb":
+            return
+                "pub   ed25519 2024-04-17 [SC]\n" .
+                "      9D7F 99A0 CB8F 05C8 A695  8D62 56A9 7AF7 600A 39A6\n" .
+                "uid           [ultimate] Calvin Buckley (PHP) <calvinb@php.net>\n" .
+                "sub   cv25519 2024-04-17 [E]";
+
+        case 'carusogabriel-old':
             return
                 "pub   rsa4096 2020-05-09 [SC] [expires: 2024-05-08]\n" .
                 "      BFDD D286 4282 4F81 18EF  7790 9B67 A5C1 2229 118F\n" .
                 "uid           [ultimate] Gabriel Caruso (Release Manager) <carusogabriel@php.net>\n" .
                 "sub   rsa4096 2020-05-09 [E] [expires: 2024-05-08]";
+
+        case 'carusogabriel-new':
+            return
+                "pub   rsa4096 2022-08-30 [SC] [expires: 2024-08-29]\n" .
+                "      2C16 C765 DBE5 4A08 8130  F1BC 4B9B 5F60 0B55 F3B4\n" .
+                "uid           [ultimate] Gabriel Caruso <carusogabriel@php.net>\n" .
+                "sub   rsa4096 2022-08-30 [E] [expires: 2024-08-29]";
 
         case 'cmb':
             return
@@ -45,6 +68,18 @@ function gpg_key_get(string $rm): ?string {
                 "pub   4096R/7267B52D 2012-03-20 [expires: 2016-03-19]\n" .
                 "      Key fingerprint = 0B96 609E 270F 565C 1329  2B24 C13C 70B8 7267 B52D\n" .
                 "uid                  David Soria Parra <dsp@php.net>";
+
+        case 'ericmann':
+            return
+                "pub   rsa4096 2016-11-25 [SC]\n" .
+                "      AFD8 691F DAED F03B DF6E  4605 63F1 5A9B 7153 76CA\n" .
+                "uid           [ultimate] Eric A Mann <eric@sixthree.me>\n" .
+                "uid           [ultimate] Eric A Mann <eric@eamann.com>\n" .
+                "uid           [ultimate] Eric A Mann <eric@eam.me>\n" .
+                "uid           [ultimate] Eric Mann <ericmann@php.net>\n" .
+                "sub   rsa4096 2016-11-25 [S]\n" .
+                "sub   rsa4096 2016-11-25 [E]\n" .
+                "sub   rsa4096 2016-11-25 [A]";
 
         case 'johannes':
             return
@@ -79,6 +114,13 @@ function gpg_key_get(string $rm): ?string {
                 "uid           [ultimate] Peter Kokot <petk@php.net>\n" .
                 "sub   rsa4096 2019-05-29 [E] [expires: 2021-05-28]";
 
+        case 'pierrick':
+            return
+                "pub   rsa4096 2021-04-01 [SC]\n" .
+                "      1198 C011 7593 497A 5EC5  C199 286A F1F9 8974 69DC\n" .
+                "uid           [ultimate] Pierrick Charron <pierrick@php.net>\n" .
+                "sub   rsa4096 2021-04-01 [E]";
+
         case 'pollita':
             return
                 "pub   4096R/70D12172 2017-04-14 [expires: 2024-04-21]\n" .
@@ -87,16 +129,32 @@ function gpg_key_get(string $rm): ?string {
 
         case 'ramsey':
             return
-                "pub   rsa4096 2021-04-26 [SC] [expires: 2024-11-26]\n" .
+                "pub   rsa4096 2021-04-26 [SC] [expires: 2025-11-24]\n" .
                 "      39B6 4134 3D8C 104B 2B14  6DC3 F9C3 9DC0 B969 8544\n" .
                 "uid           [ultimate] Ben Ramsey <ramsey@php.net>\n" .
-                "sub   rsa4096 2021-04-26 [E] [expires: 2024-11-26]";
+                "sub   rsa4096 2021-04-26 [E] [expires: 2025-11-24]";
 
         case 'remi':
             return
                 "pub   4096R/EE5AF27F 2017-05-24 [expires: 2024-05-22]\n" .
                 "      Key fingerprint = B1B4 4D8F 021E 4E2D 6021  E995 DC9F F8D3 EE5A F27F\n" .
                 "uid                  Remi Collet <remi@php.net>";
+
+        case 'saki':
+            return
+                "pub   rsa4096 2024-05-20 [SC]\n" .
+                "      0616 E93D 95AF 4712 43E2  6761 7704 26E1 7EBB B3DD\n" .
+                "uid           [ultimate] Saki Takamachi (for php.net) <saki@php.net>\n" .
+                "sub   rsa4096 2024-05-20 [E]";
+
+        case 'sergey':
+            return
+                "pub   rsa4096 2021-03-26 [SC] [expires: 2030-03-26]\n" .
+                "      E609 13E4 DF20 9907 D8E3  0D96 659A 97C9 CF2A 795A\n" .
+                "uid           [ultimate] Sergey Panteleev <sergey@php.net>\n" .
+                "uid           [ultimate] Sergey Panteleev <sergey@s-panteleev.ru>\n" .
+                "uid           [ultimate] Sergey Panteleev <sergey@sergeypanteleev.com>\n" .
+                "sub   rsa4096 2021-03-26 [E] [expires: 2025-03-26]";
 
         case 'stas':
             return
@@ -119,35 +177,36 @@ function gpg_key_get(string $rm): ?string {
 
 function gpg_key_get_branches(bool $activeOnly): array {
     $branches = [
-        '8.1' => [ 'krakjoe', 'ramsey', 'patrickallaert' ],
-        '8.0' => [ 'pollita', 'carusogabriel' ],
-        '7.4' => [ 'derick', 'petk' ],
-        '7.3' => [ 'cmb', 'stas' ],
-        '7.2' => [ 'pollita', 'remi', 'cmb' ],
-        '7.1' => [ 'davey', 'krakjoe', 'pollita' ],
-        '7.0' => [ 'ab', 'tyrael' ],
-        '5.6' => [ 'tyrael', 'jpauli' ],
-        '5.5' => [ 'jpauli', 'dsp', 'stas' ],
-        '5.4' => [ 'stas' ],
-        '5.3' => [ 'dsp', 'johannes' ],
+        '8.4' => ['ericmann', 'calvinb', 'saki'],
+        '8.3' => ['pierrick', 'ericmann', 'bukka'],
+        '8.2' => ['pierrick', 'ramsey', 'sergey'],
+        '8.1' => ['krakjoe', 'ramsey', 'patrickallaert'],
+        '8.0' => ['pollita', 'carusogabriel-old', 'carusogabriel-new', 'ramsey'],
+        '7.4' => ['derick', 'petk'],
+        '7.3' => ['cmb', 'stas'],
+        '7.2' => ['pollita', 'remi', 'cmb'],
+        '7.1' => ['davey', 'krakjoe', 'pollita'],
+        '7.0' => ['ab', 'tyrael'],
+        '5.6' => ['tyrael', 'jpauli'],
+        '5.5' => ['jpauli', 'dsp', 'stas'],
+        '5.4' => ['stas'],
+        '5.3' => ['dsp', 'johannes'],
     ];
 
     if (!$activeOnly) { return $branches; }
 
     $active = get_active_branches();
-    return array_filter($branches, function($branch) use ($active) {
+    return array_filter($branches, function ($branch) use ($active) {
         [$major] = explode('.', $branch, 2);
         return isset($active[$major][$branch]);
     }, ARRAY_FILTER_USE_KEY);
 }
 
 function gpg_key_show_keys(bool $activeOnly): void {
-    $branches = gpg_key_get_branches($activeOnly);
-
     foreach (gpg_key_get_branches($activeOnly) as $branch => $rms) {
         $keys = array_filter(
-            array_map(function($rm) { return gpg_key_get($rm); }, $rms),
-            function($key) { return $key !== null; });
+            array_map(function ($rm) { return gpg_key_get($rm); }, $rms),
+            function ($key) { return $key !== null; });
         if (empty($keys)) { continue; }
 
         $branch = htmlentities($branch, ENT_QUOTES, 'UTF-8');

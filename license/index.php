@@ -17,7 +17,7 @@ $SIDEBAR_DATA = <<<EOF
 </aside>
 EOF;
 
-site_header("License Information", array("current" => "help"));
+site_header("License Information", ["current" => "help"]);
 ?>
 
 <h1>PHP Licensing</h1>
@@ -64,7 +64,7 @@ site_header("License Information", array("current" => "help"));
   copyright (c) the PHP Documentation Group
  </li>
  <li><a href="http://creativecommons.org/licenses/by/3.0/">Summary</a> in human-readable form</li>
- <li>Practical Information: <a href="http://doc.php.net/tutorial/">Documentation HOWTO</a></li>
+ <li>Practical Information: <a href="https://doc.php.net/guide/">Contribution Guide</a></li>
 </ul>
 
 <a id="web-lic"></a>
@@ -150,7 +150,6 @@ For related projects, please refer to licensing information on the Project websi
 <ul>
   <li><a href="http://pecl.php.net/copyright.php">PECL</a></li>
   <li><a href="http://pear.php.net/copyright.php">PEAR</a></li>
-  <li><a href="http://gtk.php.net/copyright.php">GTK</a></li>
 </ul>
 
-<?php site_footer(array('sidebar' => $SIDEBAR_DATA));
+<?php site_footer(['sidebar' => $SIDEBAR_DATA]);

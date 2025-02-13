@@ -6,12 +6,11 @@ $SIDEBAR_DATA = '
 
 <p>
  Unsubscribe from the <a href="http://pear.php.net/support/lists.php">PEAR
- lists</a>, the <a href="http://pecl.php.net/support.php">PECL
- lists</a>, and the <a href="http://gtk.php.net/resources.php">PHP-GTK
+ lists</a> and the <a href="http://pecl.php.net/support.php">PECL
  lists</a> on their own pages.
-</p> 
+</p>
 ';
-site_header("Unsubscribing", array("current" => "community"));
+site_header("Unsubscribing", ["current" => "community"]);
 ?>
 
 <h1>Unsubscribing From a Mailing List</h1>
@@ -40,15 +39,15 @@ site_header("Unsubscribing", array("current" => "community"));
 
 <p>
  To unsubscribe from one of those mailing lists, all you usually need to
- do is send an email to <code><em>listname</em>-unsubscribe@lists.php.net</code>
+ do is send an email to <code><em>listname</em>+unsubscribe@lists.php.net</code>
  (substituting the name of the list for <code><em>listname</em></code>
- &mdash; for example, <code>php-general-unsubscribe@lists.php.net</code>).
+ &mdash; for example, <code>php-general+unsubscribe@lists.php.net</code>).
 </p>
 
 <p>
  If you are subscribed to the <strong>digest version</strong> of the
  mailing list, you need to send an email to
- <code><em>listname</em>-digest-unsubscribe@lists.php.net</code>.
+ <code><em>listname</em>+unsubscribe-digest@lists.php.net</code>.
 </p>
 
 <p>
@@ -158,22 +157,6 @@ site_header("Unsubscribing", array("current" => "community"));
   to hide the headers.
  </dd>
 </dl>
-
-<a id="unsubdiff"></a>
-<h2>Unsubscribe with a different email address</h2>
-
-<p>
- To unsubscribe an address like this that is different from what the
- mailing list software recognizes as your own address, you need to send mail to
- <code><em>listname</em>-unsubscribe-<em>joecool=example.com</em>@lists.php.net</code>
- (or <code>-unsubscribe-digest-</code>, if the address is subscribed to the
- digest format of the list).
-</p>
-
-<p>
- Once you have done that, you will receive a message at that email address
- with instructions on how to complete your unsubscription request.
-</p>
 
 <h2>Still need help?</h2>
 

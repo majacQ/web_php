@@ -1,4 +1,9 @@
-<?php // -*- C++ -*-
+<?php
+
+use phpweb\UserPreferences;
+
+require_once __DIR__ . '/../src/autoload.php';
+
 // Compress all pages, if ext/zlib is available on the mirror
 // XXX Deactivated by sas, causes errors towards delivery machines
 // ini_set("zlib.output_compression", 1);
@@ -15,7 +20,7 @@ header("Content-type: text/html; charset=utf-8");
 header("Permissions-Policy: interest-cohort=()");
 
 /* Fix Silly Same Origin Policies */
-(function() {
+(function (): void {
     if (!isset($_SERVER["HTTP_ORIGIN"])) {
         return;
     }
@@ -35,7 +40,7 @@ header("Permissions-Policy: interest-cohort=()");
     header("Access-Control-Allow-Origin: http://$hostname");
     if (isset($_SERVER["HTTP_ACCESS_CONTROL_REQUEST_HEADERS"])) {
         $headers = $_SERVER["HTTP_ACCESS_CONTROL_REQUEST_HEADERS"];
-        $headers = str_replace(array("\r", "\n", "\0"), "", $headers);
+        $headers = str_replace(["\r", "\n", "\0"], "", $headers);
         header("Access-Control-Allow-Headers: $headers");
     }
 })();
@@ -48,7 +53,6 @@ header("X-Frame-Options: SAMEORIGIN");
 if (ini_get("date.timezone") === "" && function_exists("date_default_timezone_set")) {
     date_default_timezone_set("UTC");
 }
-
 
 /* Compatibility with the PHP webserver.. */
 if (!isset($_SERVER["SERVER_ADDR"])) {
@@ -67,13 +71,13 @@ unset($RSIDEBAR_DATA);
 unset($SIDEBAR_DATA);
 unset($SEARCH_BASE);
 unset($LANG);
-unset($COUNTRY);
 unset($ONLOAD);
-unset($MYPHPNET);
 unset($LAST_UPDATED);
 
+$userPreferences = new UserPreferences();
+
 // Load the My PHP.net settings before any includes
-myphpnet_load();
+$userPreferences->load();
 
 // Site details (mirror site information)
 include __DIR__ . '/site.inc';
@@ -81,7 +85,7 @@ include __DIR__ . '/site.inc';
 // Choose language used for translated parts
 include __DIR__ . '/langchooser.inc';
 
-// Get country of the user and set it in a cookie
+// Import function to get the real IP address
 include __DIR__ . '/ip-to-country.inc';
 
 // Common layout functions
@@ -94,120 +98,26 @@ include __DIR__ . '/last_updated.inc';
 
 // -----------------------------------------------------------------------------
 
-// Load in the user preferences
-function myphpnet_load()
-{
-    global $MYPHPNET, $MYSITE;
+// Embed Google Custom Search engine
+function google_cse(): void {
+    $cse_snippet = <<<EOF
+        <noscript>
+          php.net's search functionality requires JavaScript to operate. Please enable
+          JavaScript and reload to continue.
+        </noscript>
+        <script>
+            (function() {
+                var cx = '011570197911755000456:fip9wopfz_u';
+                var gcse = document.createElement('script');
+                gcse.type = 'text/javascript';
+                gcse.async = true;
+                gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(gcse, s);
+            })();
+        </script>
+        <div class="gcse-search" data-linktarget></div>
+    EOF;
 
-    // Empty the preferences array
-    $MYPHPNET = array(FALSE, FALSE, "NONE", 0, FALSE);
-
-    if ($MYSITE === 'http://docs.php.net/') {
-        $MYPHPNET[4] = TRUE;
-    }
-
-    // If we have a cookie, set the values in the array
-    if (!empty($_COOKIE['MYPHPNET'])) {
-        $MYPHPNET = explode(",", $_COOKIE['MYPHPNET']);
-    }
-
-    // Ignore site part, and always use https://www.php.net
-    $MYPHPNET[2] = 'https://www.php.net';
-}
-
-// Get or set preferred language code
-function myphpnet_language($langcode = FALSE)
-{
-    global $MYPHPNET, $LANGUAGES;
-
-    // Set language code
-    if ($langcode && isset($LANGUAGES[$langcode])) {
-        $MYPHPNET[0] = $langcode;
-    }
-    // Return code or FALSE
-    elseif (isset($MYPHPNET[0]) && $MYPHPNET[0]) {
-        return $MYPHPNET[0];
-    }
-    return false;
-}
-
-define("MYPHPNET_URL_NONE", FALSE);
-define("MYPHPNET_URL_FUNC", 'quickref');
-define("MYPHPNET_URL_MANUAL", 'manual');
-
-// Set URL search fallback preference
-function myphpnet_urlsearch($type = FALSE)
-{
-    global $MYPHPNET;
-
-    // Set type if specified and if correct
-    if ($type && in_array($type, array(MYPHPNET_URL_FUNC, MYPHPNET_URL_MANUAL))) {
-        $MYPHPNET[1] = $type;
-    }
-
-    // Return code or NONE
-    elseif (isset($MYPHPNET[1]) && !empty($MYPHPNET[1])) {
-        return $MYPHPNET[1];
-    } else { return MYPHPNET_URL_NONE; }
-}
-
-function myphpnet_showug($enable = null) {
-    global $MYPHPNET;
-
-    if (isset($_GET["showug"])) {
-        $enable = true;
-    }
-
-    if ($enable !== null) {
-        $MYPHPNET[3] = $enable;
-    }
-
-    if (isset($MYPHPNET[3])) {
-        return $MYPHPNET[3];
-    }
-
-    if ($_SERVER["REQUEST_TIME"] % 10) {
-        return true;
-    }
-
-    return false;
-}
-
-// Save user settings in cookie
-function myphpnet_save()
-{
-    global $MYPHPNET;
-
-    // Fill in values not specified
-    for ($i = 0; $i <= 3; $i++) {
-        if (!isset($MYPHPNET[$i])) { $MYPHPNET[$i] = FALSE; }
-    }
-
-    // Set all the preferred values for a year
-    mirror_setcookie("MYPHPNET", join(",", $MYPHPNET), 60*60*24*365);
-
-}
-
-// Default: Default search.
-// Lang: Not yet implemented (TODO: Compare google lang codes with ours. We did this for bing already, so maybe it's an easy fix)
-// TODO: Possible $default escaping issues
-function google_cse($default = '', $lang = 'en') {
-?>
-<noscript>
-  php.net's search functionality requires JavaScript to operate. Please enable
-  JavaScript and reload to continue.
-</noscript>
-<script>
-    (function() {
-        var cx = '011570197911755000456:fip9wopfz_u';
-        var gcse = document.createElement('script');
-        gcse.type = 'text/javascript';
-        gcse.async = true;
-        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(gcse, s);
-    })();
-</script>
-<div class="gcse-search" data-linktarget></div>
-<?php
+    echo $cse_snippet;
 }

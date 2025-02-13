@@ -5,9 +5,11 @@ $_SERVER['BASE_PAGE'] = 'manual/add-note.php';
 include_once __DIR__ . '/../include/prepend.inc';
 include_once __DIR__ . '/../include/posttohost.inc';
 include_once __DIR__ . '/../include/shared-manual.inc';
-include      __DIR__ . '/spam_challenge.php';
+include __DIR__ . '/spam_challenge.php';
 
-site_header("Add Manual Note", array( 'css' => 'add-note.css'));
+use phpweb\UserNotes\UserNote;
+
+site_header("Add Manual Note", ['css' => 'add-note.css']);
 
 // Copy over "sect" and "redirect" from GET to POST
 if (empty($_POST['sect']) && isset($_GET['sect'])) {
@@ -16,13 +18,17 @@ if (empty($_POST['sect']) && isset($_GET['sect'])) {
 if (empty($_POST['redirect']) && isset($_GET['redirect'])) {
     $_POST['redirect'] = $_GET['redirect'];
 }
+// Assume English if we didn't get a language
+if (empty($_POST['repo'])) {
+    $_POST['repo'] = 'en';
+}
 
 // Decide on whether all vars are present for processing
-$process = TRUE;
-$needed_vars = array('note', 'user', 'sect', 'redirect', 'action', 'func', 'arga', 'argb', 'answer');
+$process = true;
+$needed_vars = ['note', 'user', 'sect', 'redirect', 'action', 'func', 'arga', 'argb', 'answer'];
 foreach ($needed_vars as $varname) {
     if (empty($_POST[$varname])) {
-        $process = FALSE;
+        $process = false;
         break;
     }
 }
@@ -36,17 +42,16 @@ if ($process) {
 
     // Convert all line-endings to unix format,
     // and don't allow out-of-control blank lines
-    $note = str_replace("\r\n", "\n", $note);
-    $note = str_replace("\r", "\n", $note);
+    $note = str_replace(["\r\n", "\r"], "\n", $note);
     $note = preg_replace("/\n{2,}/", "\n\n", $note);
 
     // Don't pass through example username
-    if ($user == "user@example.com") {
+    if ($user === "user@example.com") {
         $user = "Anonymous";
     }
 
     // We don't know of any error now
-    $error = FALSE;
+    $error = false;
 
     // No note specified
     if (strlen($note) == 0) {
@@ -86,35 +91,34 @@ if ($process) {
     }
 
     // No error was found, and the submit action is required
-    if (!$error && strtolower($_POST['action']) != "preview") {
+    if (!$error && strtolower($_POST['action']) !== "preview") {
 
-        $redirip = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ?
-                   $_SERVER['HTTP_X_FORWARDED_FOR'] :
-                   (isset($_SERVER['HTTP_VIA']) ? $_SERVER['HTTP_VIA'] : '');
+        $redirip = $_SERVER['HTTP_X_FORWARDED_FOR'] ??
+                   ($_SERVER['HTTP_VIA'] ?? '');
 
         // Post the variables to the central user note script
         $result = posttohost(
             "https://main.php.net/entry/user-note.php",
-            array(
-                'user'    => $user,
-                'note'    => $note,
-                'sect'    => $_POST['sect'],
-                'ip'      => $_SERVER['REMOTE_ADDR'],
-                'redirip' => $redirip
-            )
+            [
+                'user' => $user,
+                'note' => $note,
+                'sect' => $_POST['sect'],
+                'ip' => $_SERVER['REMOTE_ADDR'],
+                'redirip' => $redirip,
+            ],
         );
 
         // If there is any non-header result, then it is an error
         if ($result) {
-            if (strpos($result, '[TOO MANY NOTES]') !== FALSE) {
-                print "<p class=\"formerror\">As a security precaution, we only allow a certain number of notes to be submitted per minute. At this time, this number has been exceeded. Please re-submit your note in about a minute.</p>";
-            } else if (($pos = strpos($result, '[SPAMMER]')) !== FALSE) {
-                $ip       = trim(substr($result, $pos+9));
+            if (strpos($result, '[TOO MANY NOTES]') !== false) {
+                echo "<p class=\"formerror\">As a security precaution, we only allow a certain number of notes to be submitted per minute. At this time, this number has been exceeded. Please re-submit your note in about a minute.</p>";
+            } elseif (($pos = strpos($result, '[SPAMMER]')) !== false) {
+                $ip = trim(substr($result, $pos + 9));
                 $spam_url = $ip_spam_lookup_url . $ip;
-                print '<p class="formerror">Your IP is listed in one of the spammers lists we use, which aren\'t controlled by us. More information is available at <a href="'.$spam_url.'">'.$spam_url.'</a>.</p>';
-            } else if (strpos($result, '[SPAM WORD]') !== FALSE) {
+                echo '<p class="formerror">Your IP is listed in one of the spammers lists we use, which aren\'t controlled by us. More information is available at <a href="' . $spam_url . '">' . $spam_url . '</a>.</p>';
+            } elseif (strpos($result, '[SPAM WORD]') !== false) {
                 echo '<p class="formerror">Your note contains a prohibited (usually SPAM) word. Please remove it and try again.</p>';
-            } else if (strpos($result, '[CLOSED]') !== FALSE) {
+            } elseif (strpos($result, '[CLOSED]') !== false) {
                 echo '<p class="formerror">Due to some technical problems this service isn\'t currently working. Please try again later. Sorry for any inconvenience.</p>';
             } else {
                 echo "<!-- $result -->";
@@ -125,9 +129,8 @@ if ($process) {
         // There was no error returned
         else {
             echo '<p>Your submission was successful -- thanks for contributing! Note ',
-                 'that it will not show up for up to a few hours on some of the <a ',
-                 'href="/mirrors.php">mirrors</a>, but it will find its way to all of ',
-                 'our mirrors in due time.</p>';
+                 'that it will not show up for up to a few hours, ',
+                 'but it will eventually find its way.</p>';
         }
 
         // Print out common footer, and end page
@@ -136,17 +139,14 @@ if ($process) {
     }
 
     // There was an error, or a preview is needed
-    else {
+    // If there was an error, print out
+    if ($error) { echo "<p class=\"formerror\">$error</p>\n"; }
 
-        // If there was an error, print out
-        if ($error) { echo "<p class=\"formerror\">$error</p>\n"; }
-
-        // Print out preview of note
-        echo '<p>This is what your entry will look like, roughly:</p>';
-        echo '<div id="usernotes">';
-        manual_note_display(time(), $user, $note, FALSE);
-        echo '</div><br><br>';
-    }
+    // Print out preview of note
+    echo '<p>This is what your entry will look like, roughly:</p>';
+    echo '<div id="usernotes">';
+    manual_note_display(new UserNote('', '', '', time(), $user, $note));
+    echo '</div><br><br>';
 }
 
 // Any needed variable was missing => display instructions
@@ -194,11 +194,7 @@ else {
       </div>
       <div class="text">
         <div class="phpcode">
-          <code>
-            <span class="html">
-              <p>eval() is the best for all sorts of things</p>
-            </span>
-          </code>
+          <code><span class="html">eval() is the best for all sorts of things</span></code>
         </div>
       </div>
     </div>
@@ -224,11 +220,7 @@ else {
   </div>
   <div class="text">
     <div class="phpcode">
-      <code>
-        <span class="html">
-        <p>If eval() is the answer, you're almost certainly asking the wrong question.</p>
-        </span>
-      </code>
+      <code><span class="html">If eval() is the answer, you're almost certainly asking the wrong question.</span></code>
     </div>
   </div>
 </div>
@@ -254,11 +246,7 @@ else {
   </div>
   <div class="text">
     <div class="phpcode">
-      <code>
-        <span class="html">
-        <p>egg bacon sausage spam spam baked beans</p>
-        </span>
-      </code>
+      <code><span class="html">egg bacon sausage spam spam baked beans</span></code>
     </div>
   </div>
 </div>
@@ -274,8 +262,8 @@ else {
 <div class='columns'>
 <ul>
   <li><strong>Bug reports &amp; Missing documentation</strong>
-    Instead <a href="http://bugs.php.net/report.php?bug_type=Documentation+problem<?php echo isset($_POST['sect']) ? '&amp;manpage=' . clean($_POST['sect']) : ''; ?>">report a bug</a>
-  for this manual page to the bug database.
+    Instead <a href="https://github.com/php/doc-<?=clean($_POST['repo'])?>/issues/new?body=From%20manual%20page:%20https:%2F%2Fphp.net%2F<?=clean($_POST['sect'])?>%0A%0A---">report an issue</a>
+  for this manual page.
   </li>
   <li><strong>Support questions or request for help</strong> See the <a href="/support.php">support page</a> for available options. In other words, do not ask questions within the user notes.</li>
   <li><strong>References to other notes or authors</strong>  This is not a forum; we do not encourage nor permit discussions here.  Further, if a note is referenced directly and is later removed or modified it causes confusion.
@@ -346,7 +334,7 @@ else {
 if (empty($_POST['user'])) { $_POST['user'] = "user@example.com"; }
 
 // There is no section to add note to
-if (!isset($_POST['sect']) || !isset($_POST['redirect'])) {
+if (!isset($_POST['sect'], $_POST['redirect'])) {
     echo '<p class="formerror">To add a note, you must click on the "Add Note" button (the plus sign)  ',
          'on the bottom of a manual page so we know where to add the note!</p>';
 }
@@ -363,28 +351,27 @@ else {?>
    <td colspan="2">
     <b>
      <a href="/support.php">Click here to go to the support pages.</a><br>
-     <a href="http://bugs.php.net/report.php?bug_type=Documentation+problem&amp;manpage=<?php echo clean($_POST['sect']); ?>">Click here to submit a bug report.</a><br>
-     <a href="http://bugs.php.net/report.php?bug_type=Documentation+problem&amp;manpage=<?php echo clean($_POST['sect']); ?>">Click here to request a feature.</a><br>
-     (Again, please note, if you ask a question, report a bug, or request a feature,
+     <a href="https://github.com/php/doc-<?=clean($_POST['repo'])?>/issues/new?body=From%20manual%20page:%20https:%2F%2Fphp.net%2F<?=clean($_POST['sect'])?>%0A%0A---">Click here to submit an issue about the documentation.</a><br>
+     <a href="https://github.com/php/php-src/issues/new?body=From%20manual%20page:%20https:%2F%2Fphp.net%2F<?=clean($_POST['sect'])?>%0A%0A---">Click here to submit an issue about PHP itself.</a><br>
+     (Again, please note, if you ask a question, report an issue, or request a feature,
      your note <i>will be deleted</i>.)
     </b>
    </td>
   </tr>
   <tr>
-   <th class="subr">Your email address (or name):</th>
-   <td><input type="text" name="user" size="60" maxlength="40" value="<?php echo clean($_POST['user']); ?>"></td>
+   <th class="subr"><label for="form-user">Your email address</label>:</th>
+   <td><input id="form-user" type="email" name="user" size="60" maxlength="40" required value="<?php echo clean($_POST['user']); ?>"></td>
   </tr>
   <tr>
-   <th class="subr">Your notes:</th>
-   <td><textarea name="note" rows="20" cols="60" wrap="virtual"><?php if (isset($_POST['note'])) { echo clean($_POST['note']); } ?></textarea>
+   <th class="subr"><label for="form-note">Your notes</label>:</th>
+   <td><textarea id="form-note" name="note" rows="20" cols="60" wrap="virtual" required maxlength="4095" minlength="32"><?php if (isset($_POST['note'])) { echo clean($_POST['note']); } ?></textarea>
    <br>
   </td>
   </tr>
   <tr>
-   <th class="subr">Answer to this simple question (SPAM challenge):<br>
+   <th class="subr"><label for="form-answer">Answer to this simple question (SPAM challenge)</label>:<br>
    <?php $c = gen_challenge(); echo $c[3]; ?>?</th>
-   <td><input type="text" name="answer" size="60" maxlength="10"> (Example: nine)</td>
-  </td>
+   <td><input id="form-answer" type="text" name="answer" size="60" maxlength="10" required> (Example: nine)</td>
   </tr>
   <tr>
    <th colspan="2">

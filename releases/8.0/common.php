@@ -1,13 +1,25 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace releases\php80;
+
 include_once __DIR__ . '/../../include/prepend.inc';
 
-function language_redirect(string $currentLang): void {
-    // We don't use the general language selection of php.net,
-    // so soldier on with this one.
-    return;
-}
+const LANGUAGES = [
+    'en' => 'English',
+    'de' => 'Deutsch',
+    'es' => 'Español',
+    'fr' => 'Français',
+    'it' => 'Italiano',
+    'ja' => '日本語',
+    'nl' => 'Nederlands',
+    'pt_BR' => 'Português do Brasil',
+    'ru' => 'Русский',
+    'tr' => 'Türkçe',
+    'zh' => '简体中文',
+    'ka' => 'ქართული',
+];
 
 function common_header(string $description): void {
     global $MYSITE;
@@ -17,9 +29,9 @@ function common_header(string $description): void {
     $meta_description = \htmlspecialchars($description);
 
     \site_header("PHP 8.0.0 Release Announcement", [
-            'current' => 'php8',
-            'css' => ['php8.css'],
-            'meta_tags' => <<<META
+        'current' => 'php8',
+        'css' => ['php8.css'],
+        'meta_tags' => <<<META
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@official_php" />
 <meta name="twitter:title" content="PHP 8.0 Released" />
@@ -34,24 +46,10 @@ function common_header(string $description): void {
 <meta property="og:image" content="{$meta_image_path}" />
 <meta property="og:description" content="{$meta_description}" />
 META
-        ]);
+    ]);
 }
 
 function language_chooser(string $currentLang): void {
-    $LANGUAGES = [
-        'en'    => 'English',
-        'de'    => 'Deutsch',
-        'es'    => 'Español',
-        'fr'    => 'Français',
-        'it'    => 'Italiano',
-        'ja'    => '日本語',
-        'nl'    => 'Nederlands',
-        'pt_BR' => 'Português do Brasil',
-        'ru'    => 'Русский',
-        'tr'    => 'Türkçe',
-        'zh'    => '简体中文',
-    ];
-
     // Print out the form with all the options
     echo '
       <form action="" method="get" id="changelang" name="changelang">
@@ -61,7 +59,7 @@ function language_chooser(string $currentLang): void {
 ';
 
     $tab = '            ';
-    foreach ($LANGUAGES as $lang => $text) {
+    foreach (LANGUAGES as $lang => $text) {
         $selected = ($lang === $currentLang) ? ' selected="selected"' : '';
         echo $tab, "<option value='$lang'$selected>$text</option>\n";
     }
@@ -71,4 +69,3 @@ function language_chooser(string $currentLang): void {
       </form>
 ';
 }
-

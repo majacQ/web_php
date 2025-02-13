@@ -2,7 +2,6 @@
 $_SERVER['BASE_PAGE'] = 'releases/8.0/en.php';
 include_once __DIR__ . '/common.php';
 
-releases\php80\language_redirect('fr');
 releases\php80\common_header(
     "PHP 8.0 est une mise à jour majeure du langage PHP. " .
     "Elle contient beaucoup de nouvelle fonctionnalités et d'optimisations, " .
@@ -48,7 +47,7 @@ releases\php80\common_header(
         <div class="php8-compare__label">PHP 7</div>
         <div class="php8-code phpcode">
             <?php highlight_php_trimmed(
-                'htmlspecialchars($string, ENT_COMPAT | ENT_HTML401, \'UTF-8\', false);'
+                'htmlspecialchars($string, ENT_COMPAT | ENT_HTML401, \'UTF-8\', false);',
             );?>
         </div>
 
@@ -59,7 +58,7 @@ releases\php80\common_header(
         <div class="php8-compare__label php8-compare__label_new">PHP 8</div>
         <div class="php8-code phpcode">
             <?php highlight_php_trimmed(
-                'htmlspecialchars($string, double_encode: false);'
+                'htmlspecialchars($string, double_encode: false);',
             );?>
         </div>
       </div>
@@ -86,7 +85,7 @@ releases\php80\common_header(
 * @Route("/api/posts/{id}", methods={"GET", "HEAD"})
 */
 class User
-{'
+{',
             );?>
         </div>
       </div>
@@ -97,7 +96,7 @@ class User
             <?php highlight_php_trimmed(
                 '#[Route("/api/posts/{id}", methods: ["GET", "HEAD"])]
 class User
-{'
+{',
             );?>
         </div>
       </div>
@@ -131,7 +130,7 @@ class User
     $this->y = $y;
     $this->z = $z;
   }
-}'
+}',
             );?>
         </div>
       </div>
@@ -146,7 +145,7 @@ class User
     public float $y = 0.0,
     public float $z = 0.0,
   ) {}
-}'
+}',
             );?>
         </div>
       </div>
@@ -159,7 +158,7 @@ class User
   <div class="php8-compare">
     <h2 class="php8-h2" id="union-types">
       Types d'union
-      <a class="php8-rfc" href="https://wiki.php.net/rfc/union_types_v2">RFC</a> <a class="php8-rfc" href="/manual/fr/language.types.declarations.php#language.types.declarations.union">Doc</a>
+      <a class="php8-rfc" href="https://wiki.php.net/rfc/union_types_v2">RFC</a> <a class="php8-rfc" href="/manual/fr/language.types.declarations.php#language.types.declarations.composite.union">Doc</a>
     </h2>
     <div class="php8-compare__main">
       <div class="php8-compare__block example-contents">
@@ -178,7 +177,7 @@ class User
   }
 }
 
-new Number(\'NaN\'); // Ok'
+new Number(\'NaN\'); // Ok',
             );?>
         </div>
       </div>
@@ -193,7 +192,7 @@ new Number(\'NaN\'); // Ok'
   ) {}
 }
 
-new Number(\'NaN\'); // TypeError'
+new Number(\'NaN\'); // TypeError',
             );?>
         </div>
       </div>
@@ -225,7 +224,7 @@ new Number(\'NaN\'); // TypeError'
     break;
 }
 echo $result;
-//> Oh no!'
+//> Oh no!',
             );?>
         </div>
       </div>
@@ -238,7 +237,7 @@ echo $result;
   \'8.0\' => "Oh no!",
   8.0 => "This is what I expected",
 };
-//> This is what I expected'
+//> This is what I expected',
             );?>
         </div>
       </div>
@@ -275,7 +274,7 @@ if ($session !== null) {
       $country = $address->country;
     }
   }
-}'
+}',
             );?>
         </div>
       </div>
@@ -284,7 +283,7 @@ if ($session !== null) {
         <div class="php8-compare__label php8-compare__label_new">PHP 8</div>
         <div class="php8-code phpcode">
             <?php highlight_php_trimmed(
-                '$country = $session?->user?->getAddress()?->country;'
+                '$country = $session?->user?->getAddress()?->country;',
             );?>
         </div>
       </div>
@@ -308,7 +307,7 @@ if ($session !== null) {
         <div class="php8-compare__label">PHP 7</div>
         <div class="php8-code phpcode">
             <?php highlight_php_trimmed(
-                '0 == \'foobar\' // true'
+                '0 == \'foobar\' // true',
             );?>
         </div>
       </div>
@@ -317,7 +316,7 @@ if ($session !== null) {
         <div class="php8-compare__label php8-compare__label_new">PHP 8</div>
         <div class="php8-code phpcode">
             <?php highlight_php_trimmed(
-                '0 == \'foobar\' // false'
+                '0 == \'foobar\' // false',
             );?>
         </div>
       </div>
@@ -342,7 +341,7 @@ if ($session !== null) {
             <?php highlight_php_trimmed(
                 'strlen([]); // Warning: strlen() expects parameter 1 to be string, array given
 
-array_chunk([], -1); // Warning: array_chunk(): Size parameter expected to be greater than 0'
+array_chunk([], -1); // Warning: array_chunk(): Size parameter expected to be greater than 0',
             );?>
         </div>
       </div>
@@ -353,7 +352,7 @@ array_chunk([], -1); // Warning: array_chunk(): Size parameter expected to be gr
             <?php highlight_php_trimmed(
                 'strlen([]); // TypeError: strlen(): Argument #1 ($str) must be of type string, array given
 
-array_chunk([], -1); // ValueError: array_chunk(): Argument #2 ($length) must be greater than 0'
+array_chunk([], -1); // ValueError: array_chunk(): Argument #2 ($length) must be greater than 0',
             );?>
         </div>
       </div>
@@ -499,7 +498,7 @@ array_chunk([], -1); // ValueError: array_chunk(): Argument #2 ($length) must be
       </p>
       <p>
         Le <a href="/manual/fr/migration80.php">guide de migration</a> est disponible dans le manuel PHP.
-        Veuillez le consulter pour une liste détailler des nouvelles fonctionnalités et changements non rétrocompatibles.
+        Veuillez le consulter pour une liste détaillée des nouvelles fonctionnalités et changements non rétrocompatibles.
       </p>
     </div>
   </div>
